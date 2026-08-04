@@ -36,5 +36,11 @@ public class Customer {
         this.dateOfBirth = dateOfBirth;
     }
 
+    private void verifyAge(LocalDate date){
+        Integer age = Period.between(date, LocalDate.now()).getYears();
 
+        if (age < 18){
+            throw new
+        }
+    }
 }
