@@ -21,4 +21,8 @@ public class Account {
     @EqualsAndHashCode.Include
     private String accountNumber;
 
+    @ManyToOne
+    @JoinColumn(name = "id_customer")
+    private Customer customer;
+
 }

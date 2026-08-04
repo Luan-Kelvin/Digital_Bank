@@ -6,6 +6,8 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "clients", schema = "entitys")
@@ -30,6 +32,9 @@ public class Customer {
     @Column(nullable = false)
     private LocalDate dateOfBirth;
 
+    @OneToMany(mappedBy = "customer")
+    List<Account> accounts = new ArrayList<>();
+
 
     public Customer(String name, String cpf, LocalDate dateOfBirth) {
         this.name = name;
@@ -49,5 +54,26 @@ public class Customer {
 
     public void setDateOfBirth(LocalDate dateOfBirth) {
         verifyAge(dateOfBirth);
+        this.dateOfBirth = dateOfBirth;
+    }
+
+    public void addAccount(Account account){
+        if (account == null){
+            return;
+        }
+
+        if (!accounts.contains(account)){
+            accounts.add(account);
+        }
+
+        if (account.getCustomer() != this){
+            account.setCustomer(this);
+        }
+    }
+
+    public void removeAccount(Account account){
+        if (accounts.remove(account)){
+            account.setCustomer(null);
+        }
     }
 }
