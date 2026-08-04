@@ -1,5 +1,6 @@
 package com.Lk.DigitalBank.Entity;
 
+import com.Lk.DigitalBank.Exception.MinorClientException;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -33,14 +34,20 @@ public class Customer {
     public Customer(String name, String cpf, LocalDate dateOfBirth) {
         this.name = name;
         this.cpf = cpf;
+
+        verifyAge(dateOfBirth);
         this.dateOfBirth = dateOfBirth;
     }
 
-    private void verifyAge(LocalDate date){
+    private void verifyAge(LocalDate date) {
         Integer age = Period.between(date, LocalDate.now()).getYears();
 
-        if (age < 18){
-            throw new
+        if (age < 18) {
+            throw new MinorClientException("Erro! É preciso ter 18 anos ou mais para criar conta no banco.");
         }
+    }
+
+    public void setDateOfBirth(LocalDate dateOfBirth) {
+        verifyAge(dateOfBirth);
     }
 }
