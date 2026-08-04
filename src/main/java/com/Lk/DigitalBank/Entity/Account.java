@@ -3,6 +3,9 @@ package com.Lk.DigitalBank.Entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "accounts", schema = "entitys")
 @NoArgsConstructor
@@ -24,5 +27,30 @@ public class Account {
     @ManyToOne
     @JoinColumn(name = "id_customer")
     private Customer customer;
+
+    @OneToMany(mappedBy = "account")
+    List<Transaction> transactions = new ArrayList<>();
+
+    public void addTransaction(Transaction transaction){
+        if (transaction == null){
+            return;
+        }
+
+        if (!transactions.contains(transaction)){
+            transactions.add(transaction);
+        }
+
+        if (transaction.getAccount() != this){
+            transaction.setAccount(this);
+        }
+    }
+
+    public void removeTransaction(Transaction transaction){
+
+        if (transactions.remove(transaction)){
+            transaction.setAccount(null);
+        }
+
+    }
 
 }
