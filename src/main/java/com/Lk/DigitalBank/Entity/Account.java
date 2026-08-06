@@ -94,4 +94,14 @@ public class Account {
         balance = balance.subtract(value);
     }
 
+    //ADICIONAR CLIENTE
+    public void addCustomer(Customer customer){
+        this.customer = customer;
+    }
+
+
+    //REMOVER CLIENTE
+    public void removeCustomer(){
+        this.customer = null;
+    }
 }
