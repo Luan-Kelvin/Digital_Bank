@@ -13,6 +13,7 @@ public class DigitalBankApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-
+		// Crie mais atributos na entidade account e crie metodos tambem que estao no chatgpt em funções do intelij
+		//melhore a classe Account
 	}
 }
