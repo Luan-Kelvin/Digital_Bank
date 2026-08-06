@@ -2,6 +2,7 @@ package com.Lk.DigitalBank.Entity;
 
 import com.Lk.DigitalBank.ENUM.AccountStatus;
 import com.Lk.DigitalBank.ENUM.AccountType;
+import com.Lk.DigitalBank.Exception.InsufficientBalanceWithdraw;
 import com.Lk.DigitalBank.Exception.InvalidDepositAmount;
 import jakarta.persistence.*;
 import lombok.*;
@@ -76,12 +77,21 @@ public class Account {
     }
 
     // DEPOSITAR DINHEIRO
-    public void deposit(BigDecimal value){
-        if (value.compareTo(BigDecimal.ZERO) <= 0){
+    public void deposit(BigDecimal valueDeposit){
+        if (valueDeposit.compareTo(BigDecimal.ZERO) <= 0){
             throw new InvalidDepositAmount("ERRO! Valor para déposito deve ser maior que 0.");
         }
 
-        balance = balance.add(value);
+        balance = balance.add(valueDeposit);
+    }
+
+    // SACAR DINHEIRO
+    public void withdraw(BigDecimal value){
+        if (value.compareTo(balance) == 1){
+            throw new InsufficientBalanceWithdraw("ERRO! saldo insuficiente para saque.");
+        }
+
+        balance = balance.subtract(value);
     }
 
 }
