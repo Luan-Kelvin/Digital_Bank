@@ -2,6 +2,7 @@ package com.Lk.DigitalBank.Entity;
 
 import com.Lk.DigitalBank.ENUM.AccountStatus;
 import com.Lk.DigitalBank.ENUM.AccountType;
+import com.Lk.DigitalBank.Exception.InvalidDepositAmount;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -50,6 +51,7 @@ public class Account {
     @OneToMany(mappedBy = "account")
     List<Transaction> transactions = new ArrayList<>();
 
+    // ADICIONAR NOVA TRANSAÇÃO FEITA
     public void addTransaction(Transaction transaction){
         if (transaction == null){
             return;
@@ -64,12 +66,22 @@ public class Account {
         }
     }
 
+    // APAGAR TRANSAÇÃO D HISTÓRICO
     public void removeTransaction(Transaction transaction){
 
         if (transactions.remove(transaction)){
             transaction.setAccount(null);
         }
 
+    }
+
+    // DEPOSITAR DINHEIRO
+    public void deposit(BigDecimal value){
+        if (value.compareTo(BigDecimal.ZERO) <= 0){
+            throw new InvalidDepositAmount("ERRO! Valor para déposito deve ser maior que 0.");
+        }
+
+        balance = balance.add(value);
     }
 
 }
