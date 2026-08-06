@@ -1,8 +1,12 @@
 package com.Lk.DigitalBank.Entity;
 
+import com.Lk.DigitalBank.ENUM.AccountStatus;
+import com.Lk.DigitalBank.ENUM.AccountType;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,7 +14,6 @@ import java.util.List;
 @Table(name = "accounts", schema = "entitys")
 @NoArgsConstructor
 @Getter
-@Setter
 @ToString(onlyExplicitlyIncluded = true)
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Account {
@@ -19,10 +22,26 @@ public class Account {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
+    @Column(unique = true, nullable = false, updatable = false)
     @ToString.Include
     @EqualsAndHashCode.Include
     private String accountNumber;
+
+    @Column(nullable = false)
+    private BigDecimal balance = BigDecimal.ZERO;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    @ToString.Include
+    private AccountType accountType = AccountType.CURRENT;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    @ToString.Include
+    private AccountStatus accountStatus = AccountStatus.ACTIVE;
+
+    @Column(nullable = false, updatable = false)
+    private LocalDate creationDate = LocalDate.now();
 
     @ManyToOne
     @JoinColumn(name = "id_customer")
