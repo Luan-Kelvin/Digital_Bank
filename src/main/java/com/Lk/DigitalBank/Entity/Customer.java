@@ -67,13 +67,13 @@ public class Customer {
         }
 
         if (account.getCustomer() != this){
-            account.setCustomer(this);
+            account.addCustomer(this);
         }
     }
 
     public void removeAccount(Account account){
         if (accounts.remove(account)){
-            account.setCustomer(null);
+            account.removeCustomer();
         }
     }
 }
