@@ -52,6 +52,11 @@ public class Account {
     @OneToMany(mappedBy = "account")
     List<Transaction> transactions = new ArrayList<>();
 
+    public Account(Customer customer, AccountType accountType) {
+        this.customer = customer;
+        this.accountType = accountType;
+    }
+
     // ADICIONAR NOVA TRANSAÇÃO FEITA
     public void addTransaction(Transaction transaction){
         if (transaction == null){
