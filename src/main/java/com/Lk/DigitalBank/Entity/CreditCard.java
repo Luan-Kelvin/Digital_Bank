@@ -1,7 +1,7 @@
 package com.Lk.DigitalBank.Entity;
 
+import com.Lk.DigitalBank.Exception.InvalidCreditCradPINException;
 import jakarta.persistence.*;
-import org.hibernate.Length;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -22,7 +22,7 @@ public class CreditCard {
     private String CVV;
 
     @Column(nullable = false)
-    private YearMonth expirationDate;
+    private LocalDate expirationDate;
 
     @Column(nullable = false)
     private BigDecimal creditLimit = BigDecimal.ZERO;
@@ -31,7 +31,7 @@ public class CreditCard {
     private BigDecimal usedLimit = BigDecimal.ZERO;
 
     @Column(nullable = false)
-    private LocalDate DueDay;
+    private LocalDate dueDay;
 
     @Column(nullable = false, length = 4)
     private String password;
@@ -40,7 +40,22 @@ public class CreditCard {
     private Account account;
 
     public CreditCard(String password) {
+        verifyPassword(password);
         this.password = password;
     }
 
+    // VERIFICAR SENHA
+    private  void verifyPassword(String password){
+        if (password.length() != 4){
+            throw new InvalidCreditCradPINException("ERRO! Senha deve conter exatamente 4 digitos");
+        }
+
+        if (!password.matches("^[0-9]{4}$")){
+            throw new InvalidCreditCradPINException("ERRO! senha deve conter apenas números.");
+        }
+
+        if (password.equalsIgnoreCase("1234")){
+            throw new InvalidCreditCradPINException("ERRO! Senha fraca, não pode ser "+password);
+        }
+    }
 }
