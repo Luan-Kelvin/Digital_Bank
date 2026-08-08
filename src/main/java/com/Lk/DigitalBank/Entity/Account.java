@@ -114,7 +114,7 @@ public class Account {
     }
 
     //ADICIONAR CARTÂO DE CRÉDITO
-    private void addCreditCard(CreditCard creditCard){
+    public void addCreditCard(CreditCard creditCard){
         this.creditCard = creditCard;
     }
 }

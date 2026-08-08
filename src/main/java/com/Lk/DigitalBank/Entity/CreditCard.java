@@ -60,6 +60,7 @@ public class CreditCard {
         this.cardNumber = cardNumber;
         this.cvv = cardNumber.split(" ")[3];
         this.account = account;
+        this.account.addCreditCard(this);
     }
 
     // VERIFICAR SENHA
