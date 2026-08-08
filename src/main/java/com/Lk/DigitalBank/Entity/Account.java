@@ -112,4 +112,9 @@ public class Account {
     public void removeCustomer(){
         this.customer = null;
     }
+
+    //ADICIONAR CARTÂO DE CRÉDITO
+    private void addCreditCard(CreditCard creditCard){
+        this.creditCard = creditCard;
+    }
 }
