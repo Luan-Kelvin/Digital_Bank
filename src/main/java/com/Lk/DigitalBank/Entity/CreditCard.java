@@ -1,14 +1,20 @@
 package com.Lk.DigitalBank.Entity;
 
-import com.Lk.DigitalBank.Exception.InvalidCreditCradPINException;
+import com.Lk.DigitalBank.ENUM.CardStatus;
+import com.Lk.DigitalBank.Exception.*;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.YearMonth;
 
 @Entity
 @Table(name = "creditCards", schema = "entitys")
+@Getter
+@NoArgsConstructor
+@ToString(onlyExplicitlyIncluded = true)
 public class CreditCard {
 
     @Id
@@ -16,22 +22,31 @@ public class CreditCard {
     private Long id;
 
     @Column(nullable = false, updatable = false)
+    @ToString.Include
     private String cardNumber;
 
     @Column(nullable = false, updatable = false)
-    private String CVV;
+    @ToString.Include
+    private String cvv;
 
     @Column(nullable = false)
-    private LocalDate expirationDate;
+    @ToString.Include
+    private LocalDate expirationDate = LocalDate.now().plusYears(5);
 
     @Column(nullable = false)
     private BigDecimal creditLimit = BigDecimal.ZERO;
 
     @Column(nullable = false)
+    private BigDecimal avalialableLimit = BigDecimal.ZERO;
+
+    @Column(nullable = false)
     private BigDecimal usedLimit = BigDecimal.ZERO;
 
     @Column(nullable = false)
-    private LocalDate dueDay;
+    private CardStatus cardStatus = CardStatus.ACTIVE;
+
+    @Column(nullable = false)
+    private LocalDate dueDay = LocalDate.now().plusDays(20);;
 
     @Column(nullable = false, length = 4)
     private String password;
@@ -39,9 +54,12 @@ public class CreditCard {
     @OneToOne(mappedBy = "creditCard")
     private Account account;
 
-    public CreditCard(String password) {
+    public CreditCard(String password, String cardNumber, Account account) {
         verifyPassword(password);
         this.password = password;
+        this.cardNumber = cardNumber;
+        this.cvv = cardNumber.split(" ")[3];
+        this.account = account;
     }
 
     // VERIFICAR SENHA
