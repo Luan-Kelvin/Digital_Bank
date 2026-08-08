@@ -76,4 +76,89 @@ public class CreditCard {
             throw new InvalidCreditCradPINException("ERRO! Senha fraca, não pode ser "+password);
         }
     }
+
+    //METODO PRIVADO PARA VERIFICAR SE SENHA É COMPATÍVEL
+    private  void checkCompatibility(String password){
+        if (!this.password.equals(password)){
+            throw new InvalidPasswordException("ERRO! Senha inválida");
+        }
+    }
+
+    //BLOQUEAR CARTÃO
+    public void blockCard(String password){
+       checkCompatibility(password);
+        cardStatus = CardStatus.BLOCKED;
+    }
+
+    //DESBLOQUEAR CARTÃO
+    public void unlockCard(String password){
+        checkCompatibility(password);
+        this.cardStatus = CardStatus.ACTIVE;
+    }
+
+    // CANCELAR CARTÃO
+    public void cancelCard(String password){
+        checkCompatibility(password);
+
+        cardStatus = CardStatus.CANCELED;
+    }
+
+    //ALTERAR SENHA
+    public void changePassword(String cpfCustomer, String oldPassword, String newPassword){
+        String cpf = account.getCustomer().getCpf();
+
+        if (!cpfCustomer.equals(cpf)){
+            throw new InvalidCPFException("ERRO! CPF diferente do titular da conta.");
+        }
+
+        checkCompatibility(oldPassword);
+        verifyPassword(newPassword);
+
+        this.password = newPassword;
+    }
+
+    //AUMENTAR LIMITE
+    public void increaseLimit(BigDecimal value){
+        if (value.compareTo(BigDecimal.valueOf(100)) <= 0){
+            throw new InvalidLimitValueException("ERRO! valor mínimo para aumento de limite é de R$100,00");
+        }
+
+        this.creditLimit = creditLimit.add(value);
+        this.avalialableLimit = avalialableLimit.add(value);
+    }
+
+    // DIMINUIR LIMITE
+    public void lowerLimit(BigDecimal value){
+        if (value.compareTo(BigDecimal.valueOf(100)) <= 0){
+            throw new InvalidLimitValueException("ERRO! valor mínimo para redução de limite é de R$100,00");
+        }
+
+        if (value.compareTo(this.creditLimit) == 1){
+            throw new InvalidLimitValueException("ERRO! Valor para redução de limite é menor que o valor atual do limite.");
+        }
+
+        this.creditLimit = creditLimit.subtract(value);
+        this.avalialableLimit = avalialableLimit.subtract(value);
+    }
+
+    //VERIFICAR SE TEM LIMITE DISPONÍVEL PARA  COMPRA
+    public boolean hasLimit(BigDecimal purchaseValue){
+        if (purchaseValue.compareTo(avalialableLimit) == 1){
+            return false;
+        }else {
+            return true;
+        }
+    }
+
+    //REGSITRAR COMPRA PARA DIMINUIR LIMITE DISPONÍVEL
+    public void purchase(BigDecimal value){
+        avalialableLimit = avalialableLimit.subtract(value);
+        usedLimit = usedLimit.add(value);
+    }
+
+    // PAGAR FATURA
+    public void payTheBill(){
+        usedLimit = BigDecimal.ZERO;
+        avalialableLimit = creditLimit;
+    }
 }
