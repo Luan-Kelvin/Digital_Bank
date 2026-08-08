@@ -52,6 +52,9 @@ public class Account {
     @OneToMany(mappedBy = "account")
     List<Transaction> transactions = new ArrayList<>();
 
+    @OneToOne(cascade = CascadeType.ALL)
+    private CreditCard creditCard;
+
     public Account(Customer customer, AccountType accountType) {
         this.customer = customer;
         this.accountType = accountType;
