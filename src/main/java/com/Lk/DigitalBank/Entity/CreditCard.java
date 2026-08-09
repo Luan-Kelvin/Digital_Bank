@@ -151,7 +151,7 @@ public class CreditCard {
         }
     }
 
-    //REGSITRAR COMPRA PARA DIMINUIR LIMITE DISPONÍVEL
+    //REGISTRAR COMPRA PARA DIMINUIR LIMITE DISPONÍVEL
     public void purchase(BigDecimal value){
         avalialableLimit = avalialableLimit.subtract(value);
         usedLimit = usedLimit.add(value);

@@ -7,7 +7,7 @@ import lombok.ToString;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "credit_card_purchases", schema = "entitys")
@@ -20,20 +20,19 @@ public class CreditCardPurchase {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
     private String description;
 
     @Column(nullable = false)
     @ToString.Include
-    private BigDecimal ammountPurchase;
+    private BigDecimal amountPurchase;
 
     @Column(nullable = false)
     @ToString.Include
-    private LocalDate purchaseDate = LocalDate.now();
+    private LocalDateTime purchaseDate = LocalDateTime.now();
 
     @Column(nullable = false)
     @ToString.Include
-    private Integer installments = 0;
+    private Integer installments = 1;
 
     @Column(nullable = false)
     @ToString.Include
@@ -47,23 +46,35 @@ public class CreditCardPurchase {
     @JoinColumn(name = "credit_card_id")
     private CreditCard creditCard;
 
-    public CreditCardPurchase(String description, BigDecimal ammount, Integer installments, String merchant, CreditCard creditCard) {
+    public CreditCardPurchase(String description, BigDecimal amount, Integer installments, String merchant, CreditCard creditCard) {
+        validatePurchase(amount, installments);
         this.description = description;
-        this.ammountPurchase = ammount;
+        this.amountPurchase = amount;
         this.installments = installments;
         this.merchant = merchant;
         this.creditCard = creditCard;
-        calculateIstallment(ammountPurchase, installments);
+        calculateInstallment(amountPurchase, installments);
     }
 
     //CALCULAR VALOR DAS PARCELAS
-    private void calculateIstallment(BigDecimal ammountPurchase, Integer installments){
+    private void calculateInstallment(BigDecimal amountPurchase, Integer installments){
         if (installments <= 1){
-            this.installmentAmount = ammountPurchase;
+            this.installmentAmount = amountPurchase;
             return;
         }
 
-        this.installmentAmount = ammountPurchase.divide(BigDecimal.valueOf(installments), 2, RoundingMode.HALF_UP);
+        this.installmentAmount = amountPurchase.divide(BigDecimal.valueOf(installments), 2, RoundingMode.HALF_UP);
+    }
+
+    //VALIDAR VALOR E NUMERO D PARCELAS DA COMPRA
+    private void validatePurchase(BigDecimal amount, Integer Installments){
+        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0){
+            throw new IllegalArgumentException("Compra deve ser maior que 0.");
+        }
+
+        if (installments == null || installments <= 0){
+            throw new IllegalArgumentException("Número de parcelas deve ser maior que 0.");
+        }
     }
 
 }
