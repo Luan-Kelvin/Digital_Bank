@@ -9,6 +9,8 @@ import lombok.ToString;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "creditCards", schema = "entitys")
@@ -54,6 +56,9 @@ public class CreditCard {
     @OneToOne(mappedBy = "creditCard")
     private Account account;
 
+    @OneToMany(mappedBy = "creditCard")
+    private List<CreditCardPurchase> creditCardPurchases = new ArrayList<>();
+
     public CreditCard(String password, String cardNumber, Account account) {
         verifyPassword(password);
         this.password = password;
@@ -83,6 +88,16 @@ public class CreditCard {
         if (!this.password.equals(password)){
             throw new InvalidPasswordException("ERRO! Senha inválida");
         }
+    }
+
+    //REGISTRAR NOVA COMPRA NO CARTÃO DE CRÉDITO
+    public void recordNewPurchase(CreditCardPurchase purchase){
+        if (purchase == null){
+            throw new NullPointerException("ERRO! compra inválida.");
+        }
+
+        creditCardPurchases.add(purchase);
+        purchase.addCrditCard(this);
     }
 
     //BLOQUEAR CARTÃO
