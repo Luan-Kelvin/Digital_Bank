@@ -65,15 +65,20 @@ public class CreditCard {
     @OneToMany(mappedBy = "creditCard")
     private List<CreditCardPurchase> creditCardPurchases = new ArrayList<>();
 
-    public CreditCard(String password, String cardNumber, Account account, Integer closingDayInvoice, Integer dueDayInvoice) {
+    public CreditCard(String password, String cardNumber, Account account, Integer closingDayInvoice) {
         verifyPassword(password);
         this.password = password;
         this.cardNumber = cardNumber;
         this.cvv = cardNumber.split(" ")[3];
         this.account = account;
         this.account.addCreditCard(this);
+
+        if (closingDayInvoice < 1 || closingDayInvoice > 25){
+            throw new IllegalArgumentException("ERRO! Dia de fechamento da fatura deve ser no máximo ate dia 25.");
+        }
+
         this.closingDayInvoice = closingDayInvoice;
-        this.dueDayInvoice = dueDayInvoice;
+        this.dueDayInvoice = closingDayInvoice + 5;
     }
 
     // VERIFICAR SENHA
@@ -100,12 +105,23 @@ public class CreditCard {
 
     //REGISTRAR NOVA COMPRA NO CARTÃO DE CRÉDITO
     public void recordNewPurchase(CreditCardPurchase purchase){
-        if (purchase == null){
+        if (purchase == null) {
             throw new NullPointerException("ERRO! compra inválida.");
         }
 
-        creditCardPurchases.add(purchase);
-        purchase.addCrditCard(this);
+        if (purchase.getCreditCard() != null && purchase.getCreditCard() != this) {
+            throw new IllegalStateException(
+                    "ERRO! Esta compra já pertence a outro cartão."
+            );
+        }
+
+        if (!creditCardPurchases.contains(purchase)) {
+            creditCardPurchases.add(purchase);
+        }
+
+        if (purchase.getCreditCard() != this) {
+            purchase.addCrditCard(this);
+        }
     }
 
     //BLOQUEAR CARTÃO
@@ -157,6 +173,10 @@ public class CreditCard {
             throw new InvalidLimitValueException("ERRO! valor mínimo para redução de limite é de R$100,00");
         }
 
+        if (value.compareTo(avalialableLimit) == 1){
+            throw new InvalidLimitValueException("ERRO! Novo limite deve nao pode ser aaixo do limite utilizado.")
+        }
+
         if (value.compareTo(this.creditLimit) == 1){
             throw new InvalidLimitValueException("ERRO! Valor para redução de limite é menor que o valor atual do limite.");
         }
@@ -184,5 +204,15 @@ public class CreditCard {
     public void payTheBill(){
         usedLimit = BigDecimal.ZERO;
         avalialableLimit = creditLimit;
+    }
+
+    // ALTERAR DATA DE FECHAMENTO DA FATURA;
+    public void changeBillingClosingDay(Integer newDay){
+        if (newDay < 1 || newDay > 25){
+            throw new IllegalArgumentException("ERRO! Dia de fechamento da fatura deve ser no máximo ate dia 25.");
+        }
+
+        this.closingDayInvoice = newDay;
+        this.dueDayInvoice = newDay + 5;
     }
 }
