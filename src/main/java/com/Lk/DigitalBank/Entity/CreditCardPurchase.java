@@ -77,4 +77,9 @@ public class CreditCardPurchase {
         }
     }
 
+    // ADICIONANDO CARTÃO DE CRÉDITO
+    public void addCrditCard(CreditCard creditCard){
+        this.creditCard = creditCard;
+    }
+
 }
