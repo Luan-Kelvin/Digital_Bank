@@ -48,7 +48,13 @@ public class CreditCard {
     private CardStatus cardStatus = CardStatus.ACTIVE;
 
     @Column(nullable = false)
-    private LocalDate dueDay = LocalDate.now().plusDays(20);;
+    private LocalDate creditCardDueDay = LocalDate.now().plusYears(4);;
+
+    @Column(nullable = false)
+    private Integer closingDayInvoice;
+
+    @Column(nullable = false)
+    private Integer dueDayInvoice;
 
     @Column(nullable = false, length = 4)
     private String password;
@@ -59,13 +65,15 @@ public class CreditCard {
     @OneToMany(mappedBy = "creditCard")
     private List<CreditCardPurchase> creditCardPurchases = new ArrayList<>();
 
-    public CreditCard(String password, String cardNumber, Account account) {
+    public CreditCard(String password, String cardNumber, Account account, Integer closingDayInvoice, Integer dueDayInvoice) {
         verifyPassword(password);
         this.password = password;
         this.cardNumber = cardNumber;
         this.cvv = cardNumber.split(" ")[3];
         this.account = account;
         this.account.addCreditCard(this);
+        this.closingDayInvoice = closingDayInvoice;
+        this.dueDayInvoice = dueDayInvoice;
     }
 
     // VERIFICAR SENHA
