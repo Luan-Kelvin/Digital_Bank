@@ -13,7 +13,6 @@ public class DigitalBankApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		// CRIE MAIS MÉTODOS PARA CARTÃO DE CRÉDITO E FAÇA A LIGAÇÃO MDEÇE COM ACCOUNT
-		// PEQUISAS NO CHAT EM FUNÇÕES INTELIJ E CRIAR ENDPOINT
+		// NO  cRIR ENDPOPINT ESTA OS METODOS QUE FLTM NAS ENTIDADES
 	}
 }
