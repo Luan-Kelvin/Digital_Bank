@@ -65,6 +65,9 @@ public class CreditCard {
     @OneToMany(mappedBy = "creditCard")
     private List<CreditCardPurchase> creditCardPurchases = new ArrayList<>();
 
+    @OneToMany(mappedBy = "creditCard")
+    private List<Invoice> invoices = new ArrayList<>();
+
     public CreditCard(String password, String cardNumber, Account account, Integer closingDayInvoice) {
         verifyPassword(password);
         this.password = password;
