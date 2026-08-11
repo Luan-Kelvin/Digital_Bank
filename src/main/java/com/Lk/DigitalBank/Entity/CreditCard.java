@@ -177,7 +177,7 @@ public class CreditCard {
         }
 
         if (value.compareTo(avalialableLimit) == 1){
-            throw new InvalidLimitValueException("ERRO! Novo limite deve nao pode ser aaixo do limite utilizado.")
+            throw new InvalidLimitValueException("ERRO! Novo limite deve nao pode ser aaixo do limite utilizado.");
         }
 
         if (value.compareTo(this.creditLimit) == 1){
@@ -190,11 +190,7 @@ public class CreditCard {
 
     //VERIFICAR SE TEM LIMITE DISPONÍVEL PARA  COMPRA
     public boolean hasLimit(BigDecimal purchaseValue){
-        if (purchaseValue.compareTo(avalialableLimit) == 1){
-            return false;
-        }else {
-            return true;
-        }
+        return purchaseValue.compareTo(avalialableLimit) <= 0;
     }
 
     //REGISTRAR COMPRA PARA DIMINUIR LIMITE DISPONÍVEL
@@ -204,9 +200,9 @@ public class CreditCard {
     }
 
     // PAGAR FATURA
-    public void payTheBill(){
-        usedLimit = BigDecimal.ZERO;
-        avalialableLimit = creditLimit;
+    public void payTheBill(BigDecimal value){
+        usedLimit = usedLimit.subtract(value);
+        avalialableLimit = avalialableLimit.add(value);
     }
 
     // ALTERAR DATA DE FECHAMENTO DA FATURA;
