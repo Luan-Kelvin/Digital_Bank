@@ -8,6 +8,8 @@ import lombok.ToString;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "credit_card_purchases", schema = "entitys")
@@ -46,6 +48,9 @@ public class CreditCardPurchase {
     @JoinColumn(name = "credit_card_id")
     private CreditCard creditCard;
 
+    @OneToMany(mappedBy = "creditCardPurchase", cascade = CascadeType.ALL)
+    private List<PurchaseInstallment> purchaseInstallments = new ArrayList<>();
+
     public CreditCardPurchase(String description, BigDecimal amount, Integer installments, String merchant, CreditCard creditCard) {
         validatePurchase(amount, installments);
         this.description = description;
@@ -80,6 +85,16 @@ public class CreditCardPurchase {
     // ADICIONANDO CARTÃO DE CRÉDITO
     public void addCrditCard(CreditCard creditCard){
         this.creditCard = creditCard;
+    }
+
+    // ADICIONANDO PARCELAS
+    public void addInstallments(PurchaseInstallment installment){
+        if (installment == null){
+                throw new IllegalArgumentException("ERRO! installment não pode ser nulo.");
+        }
+
+        purchaseInstallments.add(installment);
+        installment.setCreditCardPurchase(this);
     }
 
 }
