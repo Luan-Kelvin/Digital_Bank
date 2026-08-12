@@ -23,7 +23,7 @@ public class CreditCard {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, updatable = false)
+    @Column(nullable = false, updatable = false, unique = true)
     @ToString.Include
     private String cardNumber;
 
@@ -46,9 +46,6 @@ public class CreditCard {
 
     @Column(nullable = false)
     private CardStatus cardStatus = CardStatus.ACTIVE;
-
-    @Column(nullable = false)
-    private LocalDate creditCardDueDay = LocalDate.now().plusYears(4);;
 
     @Column(nullable = false)
     private Integer closingDayInvoice;
