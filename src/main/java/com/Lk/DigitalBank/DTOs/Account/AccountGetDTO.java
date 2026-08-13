@@ -1,14 +1,15 @@
-package com.Lk.DigitalBank.DTOs;
+package com.Lk.DigitalBank.DTOs.Account;
 
+import com.Lk.DigitalBank.ENUM.AccountStatus;
 import com.Lk.DigitalBank.ENUM.AccountType;
 
 import java.math.BigDecimal;
 
-public record AccountResponseDTO(
+public record AccountGetDTO(
         String accountNumber,
         BigDecimal balance,
         AccountType accountType,
-        AccountType accountStatus,
+        AccountStatus accountStatus,
         Long customerId,
         String customerName
 ) {
