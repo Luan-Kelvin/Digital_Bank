@@ -3,6 +3,7 @@ package com.Lk.DigitalBank.Repository;
 import com.Lk.DigitalBank.ENUM.AccountStatus;
 import com.Lk.DigitalBank.ENUM.AccountType;
 import com.Lk.DigitalBank.Entity.Account;
+import com.Lk.DigitalBank.Entity.Customer;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -43,4 +44,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
             SELECT nextval('entitys.account_number_seq')
             """, nativeQuery = true)
     Long nextAccountNumber();
+
+    // VERIFICAR SE EXISTE CLIENTE COM TIPO DE CONTA JA EXISTENTES
+    Boolean existsByCustomerAndAccountType(Customer customer, AccountType accountType);
 }
