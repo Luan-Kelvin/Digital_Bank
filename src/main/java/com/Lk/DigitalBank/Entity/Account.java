@@ -75,6 +75,10 @@ public class Account {
         }
     }
 
+    // ADICIONAR NÚMERO DE CONTA
+    public void addNumberAccount(String number){
+        this.accountNumber = number;
+    }
     // APAGAR TRANSAÇÃO D HISTÓRICO
     public void removeTransaction(Transaction transaction){
 
