@@ -1,8 +1,8 @@
-package com.Lk.DigitalBank.DTOs;
+package com.Lk.DigitalBank.DTOs.Customer;
 
 import java.time.LocalDate;
 
-public record CustomerResponseDTO(
+public record CustomerGetDTO(
         Long id,
         String name,
         LocalDate dateOfBirth,
