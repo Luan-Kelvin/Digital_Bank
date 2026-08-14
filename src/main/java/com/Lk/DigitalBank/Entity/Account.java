@@ -79,7 +79,8 @@ public class Account {
     public void addNumberAccount(String number){
         this.accountNumber = number;
     }
-    // APAGAR TRANSAÇÃO D HISTÓRICO
+
+    // APAGAR TRANSAÇÃO DO HISTÓRICO
     public void removeTransaction(Transaction transaction){
 
         if (transactions.remove(transaction)){
