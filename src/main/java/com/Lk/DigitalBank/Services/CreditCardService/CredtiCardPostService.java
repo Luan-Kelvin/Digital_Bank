@@ -27,18 +27,21 @@ public class CredtiCardPostService {
 
     // CRIAR CARTÃO DE CRÉDITO
     public CreditCardGetDTO createCreditCard(CreditCardPostDTO creditCardPostDTO){
-        Optional<Account> account = accountRepository.findById(creditCardPostDTO.idAccount());
+        Account account = accountRepository.findById(creditCardPostDTO.idAccount())
+                .orElseThrow(() -> new AccountAlreadyHasCreditCardException(String.format("ERRO! Conta com ID = %s ja possui cartão de crédito.", creditCardPostDTO.idAccount())));
 
-        if (account.isPresent()){
-            throw new AccountAlreadyHasCreditCardException(String.format("ERRO! Conta com ID = %s ja possui cartão de crédito.", creditCardPostDTO.idAccount()));
-        }
         String cardNumber = numberGenerator.generateNumberCard();
 
         CreditCard creditCard = new CreditCard(
                 creditCardPostDTO.password(),
-                cardNumber, account.get(),
+                cardNumber, account,
                 creditCardPostDTO.closingDayInvoice());
 
+        account.addCreditCard(creditCard);
+
+        creditCardRepository.save(creditCard);
+
         return conversor.converterCreditCard(creditCard);
+
     }
 }
