@@ -17,4 +17,7 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
     // BUSCAR POR DATA DE NASCIMENTO
     List<Customer> findByDateOfBirth(LocalDate date);
+
+    // VER SE JA EXISTE CLIENTE COM CPF
+    Boolean existsByCpf(String cpf);
 }

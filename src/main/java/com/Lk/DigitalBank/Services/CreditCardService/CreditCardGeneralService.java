@@ -5,8 +5,9 @@ import jakarta.persistence.Entity;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
-@Entity
+@Service
 @RequiredArgsConstructor
 public class CreditCardGeneralService {
     private final Logger logger = LoggerFactory.getLogger(CreditCardGetService.class);
