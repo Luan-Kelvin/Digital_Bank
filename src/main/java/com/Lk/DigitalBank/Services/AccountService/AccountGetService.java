@@ -1,11 +1,9 @@
 package com.Lk.DigitalBank.Services.AccountService;
 
-import com.Lk.DigitalBank.Components.NumberGenerator;
 import com.Lk.DigitalBank.Conversores.Conversor;
 import com.Lk.DigitalBank.DTOs.Account.AccountGetDTO;
 import com.Lk.DigitalBank.Entity.Account;
 import com.Lk.DigitalBank.Repository.AccountRepository;
-import com.Lk.DigitalBank.Repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,8 +19,6 @@ public class AccountGetService {
     private final Logger logger = LoggerFactory.getLogger(AccountGetService.class);
     private final Conversor conversor;
     private final AccountRepository accountRepository;
-    private final CustomerRepository customerRepository;
-    private final NumberGenerator numberGenerator;
 
 
     // LISTAR CONTAS EXISTENTE NO BANCO
