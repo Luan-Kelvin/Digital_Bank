@@ -2,9 +2,11 @@ package com.Lk.DigitalBank.Conversores;
 
 import com.Lk.DigitalBank.DTOs.Account.AccountGetDTO;
 import com.Lk.DigitalBank.DTOs.CreditCard.CreditCardGetDTO;
+import com.Lk.DigitalBank.DTOs.CreditCradPurchase.CreditCardPurchaseGetDTO;
 import com.Lk.DigitalBank.DTOs.Customer.CustomerGetDTO;
 import com.Lk.DigitalBank.Entity.Account;
 import com.Lk.DigitalBank.Entity.CreditCard;
+import com.Lk.DigitalBank.Entity.CreditCardPurchase;
 import com.Lk.DigitalBank.Entity.Customer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -42,6 +44,20 @@ public class Conversor {
                 creditCard.getExpirationDate(),
                 creditCard.getCreditLimit(),
                 creditCard.getAccount().getId()
+        );
+    }
+
+    // CONVERTER CREDITCARDPURCHASE PARA CREDITCARDPURCHASEGETDTO
+    public CreditCardPurchaseGetDTO converterCreditCardPurchase(CreditCardPurchase purchase){
+        return new CreditCardPurchaseGetDTO(
+                purchase.getId(),
+                purchase.getDescription(),
+                purchase.getAmountPurchase(),
+                purchase.getPurchaseDate(),
+                purchase.getInstallments(),
+                purchase.getInstallmentAmount(),
+                purchase.getMerchant(),
+                purchase.getCreditCard().getId()
         );
     }
 }
