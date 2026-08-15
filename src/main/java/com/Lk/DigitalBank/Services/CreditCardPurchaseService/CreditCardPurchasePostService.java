@@ -35,7 +35,7 @@ public class CreditCardPurchasePostService {
                 creditCard
                 );
 
-        creditCard.addCreditCardPurchase(cp);
+        creditCard.recordNewPurchase(cp);
 
         creditCardPurchseRespository.save(cp);
 
