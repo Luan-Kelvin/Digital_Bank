@@ -7,6 +7,7 @@ import com.Lk.DigitalBank.DTOs.CreditCard.CreditCardPostDTO;
 import com.Lk.DigitalBank.Entity.Account;
 import com.Lk.DigitalBank.Entity.CreditCard;
 import com.Lk.DigitalBank.Exception.AccountAlreadyHasCreditCardException;
+import com.Lk.DigitalBank.Exception.AccountDoesNotExistException;
 import com.Lk.DigitalBank.Repository.AccountRepository;
 import com.Lk.DigitalBank.Repository.CreditCardRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +19,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class CredtiCardPostService {
+public class CreditCardPostService {
     private final Logger logger = LoggerFactory.getLogger(CreditCardGetService.class);
     private final Conversor conversor;
     private final NumberGenerator numberGenerator;
@@ -28,7 +29,11 @@ public class CredtiCardPostService {
     // CRIAR CARTÃO DE CRÉDITO
     public CreditCardGetDTO createCreditCard(CreditCardPostDTO creditCardPostDTO){
         Account account = accountRepository.findById(creditCardPostDTO.idAccount())
-                .orElseThrow(() -> new AccountAlreadyHasCreditCardException(String.format("ERRO! Conta com ID = %s ja possui cartão de crédito.", creditCardPostDTO.idAccount())));
+                .orElseThrow(() -> new AccountDoesNotExistException(String.format("ERRO! Conta com ID = %s não foi encontrada.", creditCardPostDTO.idAccount())));
+
+        if (account.isCreditCard()){
+            throw new AccountAlreadyHasCreditCardException(String.format("ERRO! Conta com ID = %s ja possui cartão de crédito.", creditCardPostDTO.idAccount()));
+        }
 
         String cardNumber = numberGenerator.generateNumberCard();
 
