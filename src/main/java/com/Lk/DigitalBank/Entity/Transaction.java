@@ -39,13 +39,11 @@ public class Transaction {
     public Transaction(
            TransactionType transactionType,
            BigDecimal transactionValue,
-           String description,
-           Account account
+           String description
     ) {
         this.transactionType = transactionType;
         this.transactionValue = transactionValue;
         setDescription(description);
-        this.account = account;
     }
 
     public void setDescription(String description){
