@@ -211,4 +211,17 @@ public class CreditCard {
         this.closingDayInvoice = newDay;
         this.dueDayInvoice = newDay + 5;
     }
+
+    // ADICIONAR CREDITCARDPURCHASE
+    public void addCreditCardPurchase(CreditCardPurchase creditCardPurchase){
+        if (creditCardPurchase == null){
+            throw new IllegalArgumentException("ERRO! creditCardPurchase não pode ser null.");
+        }
+
+        this.creditCardPurchases.add(creditCardPurchase);
+
+        if (creditCardPurchase.getCreditCard() != this){
+            creditCardPurchase.addCrditCard(this);
+        }
+    }
 }
