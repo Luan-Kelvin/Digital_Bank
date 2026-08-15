@@ -1,9 +1,9 @@
-package com.Lk.DigitalBank.DTOs;
+package com.Lk.DigitalBank.DTOs.CreditCradPurchase;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-public record CreditCardPurchaseResponseDTO(
+public record CreditCardPurchaseGetDTO(
         Long id,
         String description,
         BigDecimal amountPurchase,
