@@ -71,7 +71,6 @@ public class CreditCard {
         this.cardNumber = cardNumber;
         this.cvv = cardNumber.split(" ")[3];
         this.account = account;
-        this.account.addCreditCard(this);
 
         if (closingDayInvoice < 1 || closingDayInvoice > 25){
             throw new IllegalArgumentException("ERRO! Dia de fechamento da fatura deve ser no máximo ate dia 25.");
@@ -83,7 +82,7 @@ public class CreditCard {
 
     // VERIFICAR SENHA
     private  void verifyPassword(String password){
-        if (password.length() != 4){
+        if (password == null || password.length() != 4){
             throw new InvalidCreditCradPINException("ERRO! Senha deve conter exatamente 4 digitos");
         }
 
@@ -144,14 +143,7 @@ public class CreditCard {
     }
 
     //ALTERAR SENHA
-    public void changePassword(String cpfCustomer, String oldPassword, String newPassword){
-        String cpf = account.getCustomer().getCpf();
-
-        if (!cpfCustomer.equals(cpf)){
-            throw new InvalidCPFException("ERRO! CPF diferente do titular da conta.");
-        }
-
-        checkCompatibility(oldPassword);
+    public void changePassword(String newPassword){
         verifyPassword(newPassword);
 
         this.password = newPassword;
@@ -196,11 +188,6 @@ public class CreditCard {
         usedLimit = usedLimit.add(value);
     }
 
-    // PAGAR FATURA
-    public void payTheBill(BigDecimal value){
-        usedLimit = usedLimit.subtract(value);
-        avalialableLimit = avalialableLimit.add(value);
-    }
 
     // ALTERAR DATA DE FECHAMENTO DA FATURA;
     public void changeBillingClosingDay(Integer newDay){
@@ -212,16 +199,4 @@ public class CreditCard {
         this.dueDayInvoice = newDay + 5;
     }
 
-    // ADICIONAR CREDITCARDPURCHASE
-    public void addCreditCardPurchase(CreditCardPurchase creditCardPurchase){
-        if (creditCardPurchase == null){
-            throw new IllegalArgumentException("ERRO! creditCardPurchase não pode ser null.");
-        }
-
-        this.creditCardPurchases.add(creditCardPurchase);
-
-        if (creditCardPurchase.getCreditCard() != this){
-            creditCardPurchase.addCrditCard(this);
-        }
-    }
 }
