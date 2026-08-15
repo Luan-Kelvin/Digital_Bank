@@ -60,6 +60,11 @@ public class Account {
         this.accountType = accountType;
     }
 
+    // VERIFICAR STATUS DE CONTA
+    public boolean isActive(){
+        return this.accountStatus == AccountStatus.ACTIVE;
+    }
+
     // ADICIONAR NOVA TRANSAÇÃO FEITA
     public void addTransaction(Transaction transaction){
         if (transaction == null){
@@ -100,8 +105,12 @@ public class Account {
 
     // SACAR DINHEIRO
     public void withdraw(BigDecimal value){
-        if (value.compareTo(balance) == 1){
+        if (value.compareTo(balance) > 0){
             throw new InsufficientBalanceWithdraw("ERRO! saldo insuficiente para saque.");
+        }
+
+        if (value.compareTo(BigDecimal.ZERO) <= 0){
+            throw new InvalidDepositAmount("ERRO! Valor para déposito deve ser maior que 0.");
         }
 
         balance = balance.subtract(value);
