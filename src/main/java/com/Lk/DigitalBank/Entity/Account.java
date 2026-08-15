@@ -65,6 +65,11 @@ public class Account {
         return this.accountStatus == AccountStatus.ACTIVE;
     }
 
+    //VERIFICAR SE JA POSSUI CARTÃO DE CRÉDITO
+    public boolean isCreditCard(){
+        return this.creditCard != null;
+    }
+
     // ADICIONAR NOVA TRANSAÇÃO FEITA
     public void addTransaction(Transaction transaction){
         if (transaction == null){
