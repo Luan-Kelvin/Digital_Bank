@@ -22,9 +22,7 @@ public class CustomerPostService {
 
     // CRIAR CUSTOMER
     public CustomerGetDTO createCustomer(CustomerPostDTO customerPostDTO){
-        Optional<Customer> customerRep = customerRepository.findByCpf(customerPostDTO.cpf());
-
-        if (customerRep.isPresent()){
+        if (customerRepository.existsByCpf(customerPostDTO.cpf())){
             throw new CustomerAlreadyExistsException(String.format("ERRO! Cliente com CPF %s já existe.", customerPostDTO.cpf()));
         }
 
