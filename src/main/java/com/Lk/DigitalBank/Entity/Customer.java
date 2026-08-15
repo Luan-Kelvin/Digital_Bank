@@ -10,9 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "clients", schema = "entitys")
+@Table(name = "customers", schema = "entitys")
 @Getter
-@Setter
 @NoArgsConstructor
 @ToString(onlyExplicitlyIncluded = true)
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
@@ -45,6 +44,9 @@ public class Customer {
     }
 
     private void verifyAge(LocalDate date) {
+        if (date == null){
+            throw new IllegalArgumentException("Erro! Data inválida");
+        }
         Integer age = Period.between(date, LocalDate.now()).getYears();
 
         if (age < 18) {
@@ -59,7 +61,7 @@ public class Customer {
 
     public void addAccount(Account account){
         if (account == null){
-            return;
+            throw new IllegalArgumentException("ERRO! Conta inválida.");
         }
 
         if (!accounts.contains(account)){
