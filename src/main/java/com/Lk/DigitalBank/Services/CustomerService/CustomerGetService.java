@@ -16,7 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CustomerGetService {
     private final Logger logger = LoggerFactory.getLogger(CustomerGetService.class);
-    private CustomerRepository customerRepository;
+    private final CustomerRepository customerRepository;
     private final Conversor conversor;
 
     // LISTAR CLIENTES EXISTENTES
@@ -25,13 +25,13 @@ public class CustomerGetService {
 
         if (customers.isEmpty()){
             logger.info("Nenhum cliente cadastrado no banco.");
+            return List.of();
         }
 
-        List<CustomerGetDTO> dtos = new ArrayList<>();
+        List<CustomerGetDTO> dtos = customers.stream()
+                .map(conversor::converterCustomer)
+                .toList();
 
-        customers.forEach(c -> {
-            dtos.add(conversor.converterCustomer(c));
-        });
 
         return dtos;
     }
