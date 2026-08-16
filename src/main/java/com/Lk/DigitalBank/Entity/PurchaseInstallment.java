@@ -30,9 +30,6 @@ public class PurchaseInstallment {
     private BigDecimal amount;
 
     @Column(nullable = false)
-    private LocalDate dueDate;
-
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private InvoiceStatus installmentStatus;
 
@@ -47,14 +44,12 @@ public class PurchaseInstallment {
     public PurchaseInstallment(Integer installmentNumber,
                                Integer totalInstallments,
                                BigDecimal amount,
-                               LocalDate dueDate,
                                InvoiceStatus installmentStatus,
                                CreditCardPurchase creditCardPurchase,
                                Invoice invoice) {
         this.installmentNumber = installmentNumber;
         this.totalInstallments = totalInstallments;
         this.amount = amount;
-        this.dueDate = dueDate;
         this.installmentStatus = installmentStatus;
         this.creditCardPurchase = creditCardPurchase;
         this.invoice = invoice;
