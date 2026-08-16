@@ -13,6 +13,6 @@ public class DigitalBankApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		// NO  cRIR ENDPOPINT ESTA OS METODOS QUE FLTM NAS ENTIDADES
+		// TERMINE OS SERVICES DE INVOICE, TRANSACTION E PURCHASEINSTALMMETN
 	}
 }

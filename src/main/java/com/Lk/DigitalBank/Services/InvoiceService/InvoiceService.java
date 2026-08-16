@@ -13,8 +13,8 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class InvoiceGetService {
-    private final Logger logger = LoggerFactory.getLogger(InvoiceGetService.class);
+public class InvoiceService {
+    private final Logger logger = LoggerFactory.getLogger(InvoiceService.class);
     private final Conversor conversor;
     private final InvoiceRepository invoiceRepository;
 
