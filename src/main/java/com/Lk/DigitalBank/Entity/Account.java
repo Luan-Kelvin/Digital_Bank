@@ -3,7 +3,7 @@ package com.Lk.DigitalBank.Entity;
 import com.Lk.DigitalBank.ENUM.AccountStatus;
 import com.Lk.DigitalBank.ENUM.AccountType;
 import com.Lk.DigitalBank.Exception.InsufficientBalanceWithdraw;
-import com.Lk.DigitalBank.Exception.InvalidDepositAmount;
+import com.Lk.DigitalBank.Exception.InvalidDepositAmountException;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -102,7 +102,7 @@ public class Account {
     // DEPOSITAR DINHEIRO
     public void deposit(BigDecimal valueDeposit){
         if (valueDeposit.compareTo(BigDecimal.ZERO) <= 0){
-            throw new InvalidDepositAmount("ERRO! Valor para déposito deve ser maior que 0.");
+            throw new InvalidDepositAmountException("ERRO! Valor para déposito deve ser maior que 0.");
         }
 
         balance = balance.add(valueDeposit);
@@ -115,7 +115,7 @@ public class Account {
         }
 
         if (value.compareTo(BigDecimal.ZERO) <= 0){
-            throw new InvalidDepositAmount("ERRO! Valor para déposito deve ser maior que 0.");
+            throw new InvalidDepositAmountException("ERRO! Valor para déposito deve ser maior que 0.");
         }
 
         balance = balance.subtract(value);
