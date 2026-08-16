@@ -1,7 +1,7 @@
 package com.Lk.DigitalBank.Exception;
 
-public class InvalidCreditCradPINException extends RuntimeException {
-    public InvalidCreditCradPINException(String message) {
+public class InvalidCreditCreditPinException extends RuntimeException {
+    public InvalidCreditCreditPinException(String message) {
         super(message);
     }
 }

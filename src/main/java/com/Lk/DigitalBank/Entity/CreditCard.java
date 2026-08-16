@@ -83,15 +83,15 @@ public class CreditCard {
     // VERIFICAR SENHA
     private  void verifyPassword(String password){
         if (password == null || password.length() != 4){
-            throw new InvalidCreditCradPINException("ERRO! Senha deve conter exatamente 4 digitos");
+            throw new InvalidCreditCreditPinException("ERRO! Senha deve conter exatamente 4 digitos");
         }
 
         if (!password.matches("^[0-9]{4}$")){
-            throw new InvalidCreditCradPINException("ERRO! senha deve conter apenas números.");
+            throw new InvalidCreditCreditPinException("ERRO! senha deve conter apenas números.");
         }
 
         if (password.equalsIgnoreCase("1234")){
-            throw new InvalidCreditCradPINException("ERRO! Senha fraca, não pode ser "+password);
+            throw new InvalidCreditCreditPinException("ERRO! Senha fraca, não pode ser "+password);
         }
     }
 
