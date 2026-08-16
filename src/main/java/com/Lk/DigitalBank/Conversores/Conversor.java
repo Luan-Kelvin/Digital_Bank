@@ -4,10 +4,8 @@ import com.Lk.DigitalBank.DTOs.Account.AccountGetDTO;
 import com.Lk.DigitalBank.DTOs.CreditCard.CreditCardGetDTO;
 import com.Lk.DigitalBank.DTOs.CreditCradPurchase.CreditCardPurchaseGetDTO;
 import com.Lk.DigitalBank.DTOs.Customer.CustomerGetDTO;
-import com.Lk.DigitalBank.Entity.Account;
-import com.Lk.DigitalBank.Entity.CreditCard;
-import com.Lk.DigitalBank.Entity.CreditCardPurchase;
-import com.Lk.DigitalBank.Entity.Customer;
+import com.Lk.DigitalBank.DTOs.Invoice.InvoiceGetDTO;
+import com.Lk.DigitalBank.Entity.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -58,6 +56,18 @@ public class Conversor {
                 purchase.getInstallmentAmount(),
                 purchase.getMerchant(),
                 purchase.getCreditCard().getId()
+        );
+    }
+
+    // COVERTER INVOICE EM INVOICEGETDTO
+    public InvoiceGetDTO converterInvoice(Invoice i){
+        return new InvoiceGetDTO(
+                i.getId(),
+                i.getReferenceMonth(),
+                i.getClosingDate(),
+                i.getDueDate(),
+                i.getTotalAmount(),
+                i.getCreditCard().getId()
         );
     }
 }
