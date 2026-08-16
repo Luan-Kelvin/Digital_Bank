@@ -95,10 +95,25 @@ public class CreditCard {
         }
     }
 
-    //METODO PRIVADO PARA VERIFICAR SE SENHA É COMPATÍVEL
-    private  void checkCompatibility(String password){
+    // ADICIONAR CREDIT CARD PURCHASE
+    public void addCreditCardPurchase(CreditCardPurchase purchase){
+        if (purchase == null){
+            throw new IllegalArgumentException("ERRO! Valor inválido");
+        }
+
+        this.creditCardPurchases.add(purchase);
+
+        if (purchase.getCreditCard() != this){
+            purchase.addCrditCard(this);
+        }
+    }
+
+    //METODO PARA VERIFICAR SE SENHA É COMPATÍVEL
+    public boolean checkCompatibility(String password){
         if (!this.password.equals(password)){
-            throw new InvalidPasswordException("ERRO! Senha inválida");
+            return false;
+        } else {
+            return true;
         }
     }
 

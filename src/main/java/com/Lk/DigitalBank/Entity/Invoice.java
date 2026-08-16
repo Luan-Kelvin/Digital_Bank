@@ -61,9 +61,8 @@ public class Invoice {
     @OneToMany(mappedBy = "invoice")
     private List<PurchaseInstallment> installments = new ArrayList<>();
 
-    public Invoice(YearMonth referenceMonth, BigDecimal totalAmount, CreditCard creditCard) {
+    public Invoice(YearMonth referenceMonth,  CreditCard creditCard) {
         this.referenceMonth = referenceMonth;
-        this.totalAmount = totalAmount;
         this.creditCard = creditCard;
         this.totalAmount = BigDecimal.ZERO;
         this.paidAmount = BigDecimal.ZERO;
