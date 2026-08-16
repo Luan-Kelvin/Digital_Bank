@@ -1,10 +1,10 @@
-package com.Lk.DigitalBank.DTOs;
+package com.Lk.DigitalBank.DTOs.Invoice;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.YearMonth;
 
-public record InvoiceResponseDTO(
+public record InvoiceGetDTO(
         Long id,
         YearMonth referenceMonth,
         LocalDate closingDate,
