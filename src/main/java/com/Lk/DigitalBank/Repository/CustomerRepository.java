@@ -10,7 +10,7 @@ import java.util.Optional;
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
     // BUSCAR POR NOME
-    List<Customer> findByNameContainingignoreCase(String name);
+    List<Customer> findByNameContainingIgnoreCase(String name);
 
     // BUSCAR POR CPF
     Optional<Customer> findByCpf(String cpf);
