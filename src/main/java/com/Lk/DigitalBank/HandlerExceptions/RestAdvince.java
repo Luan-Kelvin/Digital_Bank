@@ -238,4 +238,30 @@ public class RestAdvince {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(erro);
     }
+
+    @ExceptionHandler(InvalidAccountStatusException.class)
+    public ResponseEntity<ErrorResponse> invalidAccountStatus(InvalidAccountStatusException e, HttpServletRequest request){
+        ErrorResponse erro = new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.CONFLICT.value(),
+                "Status de conta inexistente",
+                e.getMessage(),
+                request.getRequestURI()
+        );
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(erro);
+    }
+
+    @ExceptionHandler(InvalidAccountTypeException.class)
+    public ResponseEntity<ErrorResponse> invalidAccountType(InvalidAccountTypeException e, HttpServletRequest request){
+        ErrorResponse erro = new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.CONFLICT.value(),
+                "Tipo de conta inexistente",
+                e.getMessage(),
+                request.getRequestURI()
+        );
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(erro);
+    }
 }
