@@ -1,5 +1,6 @@
 package com.Lk.DigitalBank.Entity;
 
+import com.Lk.DigitalBank.Exception.InvalidCPFException;
 import com.Lk.DigitalBank.Exception.MinorClientException;
 import jakarta.persistence.*;
 import lombok.*;
@@ -37,6 +38,8 @@ public class Customer {
 
     public Customer(String name, String cpf, LocalDate dateOfBirth) {
         this.name = name;
+
+        CPFvalidator(cpf);
         this.cpf = cpf;
 
         verifyAge(dateOfBirth);
@@ -51,6 +54,12 @@ public class Customer {
 
         if (age < 18) {
             throw new MinorClientException("Erro! É preciso ter 18 anos ou mais para criar conta no banco.");
+        }
+    }
+
+    private void CPFvalidator(String cpf){
+        if (!cpf.matches("^\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}$")){
+            throw new InvalidCPFException("ERRO! Formato de CPF inválido");
         }
     }
 
