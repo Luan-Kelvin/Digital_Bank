@@ -38,7 +38,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     Optional<Account> findByCreditCardId(Long id);
 
     // BUSCAR POR NÚMERO DO CARTÃO DE CRÉDITO
-    Optional<Account> findByCardNumber(String cardNumber);
+    Optional<Account> findByCreditCardCardNumber(String cardNumber);
 
     @Query(value = """
             SELECT nextval('entitys.account_number_seq')
