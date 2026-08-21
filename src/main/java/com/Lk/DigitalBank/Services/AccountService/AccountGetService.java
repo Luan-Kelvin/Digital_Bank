@@ -85,7 +85,7 @@ public class AccountGetService {
         return accounts.stream().map(conversor::converterAccount).toList();
     }
 
-    // BUSCRA POR TIPO
+    // BUSCAR POR TIPO
     public List<AccountGetDTO> searchByType(String type){
         AccountType ty = null;
 

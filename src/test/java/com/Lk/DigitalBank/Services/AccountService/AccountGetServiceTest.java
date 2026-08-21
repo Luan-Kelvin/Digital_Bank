@@ -6,6 +6,7 @@ import com.Lk.DigitalBank.ENUM.AccountStatus;
 import com.Lk.DigitalBank.ENUM.AccountType;
 import com.Lk.DigitalBank.Entity.Account;
 import com.Lk.DigitalBank.Exception.AccountDoesNotExistException;
+import com.Lk.DigitalBank.Exception.InvalidCPFException;
 import com.Lk.DigitalBank.Repository.AccountRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,10 +19,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class AccountGetServiceTest {
@@ -126,5 +126,52 @@ public class AccountGetServiceTest {
 
         verify(conversor).converterAccount(account);
 
+    }
+
+    @Test
+    public void deveRealizarBuscaPorCPFDeCliente(){
+        Account account = new Account();
+
+        AccountGetDTO dto1 = new AccountGetDTO("12345", BigDecimal.ZERO, AccountType.CURRENT, AccountStatus.ACTIVE, 1L, "teste");
+
+        String cpf = "123.456.789-22";
+
+        List<Account> accounts = List.of(account);
+
+        when(accountRepository.findByCustomerCpf(cpf)).thenReturn(accounts);
+
+        when(conversor.converterAccount(account)).thenReturn(dto1);
+
+        List<AccountGetDTO> dtos = accountGetService.searchByCustomer(cpf);
+
+        assertEquals(1, dtos.size());
+
+        verify(accountRepository).findByCustomerCpf(cpf);
+        verify(conversor).converterAccount(account);
+
+    }
+
+    @Test
+    public void develancarExcecaoSeCPFForInvalido(){
+        String cpf = "12345678922";
+
+        assertThrows(InvalidCPFException.class, () -> accountGetService.searchByCustomer(cpf));;
+
+        verify(accountRepository, never()).findByCustomerCpf(anyString());
+    }
+
+    @Test
+    public void deveRetornarListaVaziaQuandoClienteNaoPossuiContas(){
+        String cpf = "123.456.789-22";
+
+        when(accountRepository.findByCustomerCpf(cpf)).thenReturn(List.of());
+
+        List<AccountGetDTO> dtos = accountGetService.searchByCustomer(cpf);
+
+        assertTrue(dtos.isEmpty());
+
+        verify(accountRepository).findByCustomerCpf(cpf);
+
+        verifyNoInteractions(conversor);
     }
 }
