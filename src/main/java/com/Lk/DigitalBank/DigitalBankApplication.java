@@ -13,6 +13,6 @@ public class DigitalBankApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		// TERMINE OS SERVICES DE INVOICE, TRANSACTION E PURCHASEINSTALMMETN
+
 	}
 }

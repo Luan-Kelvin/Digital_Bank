@@ -14,6 +14,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -89,7 +91,7 @@ public class AccountGetServiceTest {
     }
 
     @Test
-    public void lancarExcpetionSeCOntaNaoExistir(){
+    public void lancarExcpetionSeContaNaoExistir(){
         String number = "54321";
 
         when(accountRepository.findByAccountNumber(number)).thenReturn(Optional.empty());
@@ -97,5 +99,32 @@ public class AccountGetServiceTest {
         assertThrows(AccountDoesNotExistException.class, () -> accountGetService.findByAccountNumber(number));
 
         verify(accountRepository).findByAccountNumber(number);
+    }
+
+    @Test
+    public void deveRetornarListaComTodasAsContasDoBanco(){
+        Account account = new Account();
+
+        AccountGetDTO dto = new AccountGetDTO("12345", BigDecimal.ZERO, AccountType.CURRENT, AccountStatus.ACTIVE, 1L, "teste");
+
+        account.addNumberAccount("12345");
+
+        List<Account> accounts = new ArrayList<>();
+
+        accounts.add(account);
+
+        when(accountRepository.findAll()).thenReturn(accounts);
+
+        when(conversor.converterAccount(account)).thenReturn(dto);
+
+        List<AccountGetDTO> listDtos = accountGetService.listAccounts();
+
+        assertEquals(1, listDtos.size());
+        assertEquals(dto, listDtos.get(0));
+
+        verify(accountRepository).findAll();
+
+        verify(conversor).converterAccount(account);
+
     }
 }
