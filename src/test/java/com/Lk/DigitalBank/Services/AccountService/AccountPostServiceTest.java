@@ -8,6 +8,7 @@ import com.Lk.DigitalBank.ENUM.AccountStatus;
 import com.Lk.DigitalBank.ENUM.AccountType;
 import com.Lk.DigitalBank.Entity.Account;
 import com.Lk.DigitalBank.Entity.Customer;
+import com.Lk.DigitalBank.Exception.CustomerDoesNotExistException;
 import com.Lk.DigitalBank.Repository.AccountRepository;
 import com.Lk.DigitalBank.Repository.CustomerRepository;
 
@@ -23,6 +24,7 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -67,5 +69,17 @@ public class AccountPostServiceTest {
         verify(accountRepository).existsByCustomerAndAccountType(customer, AccountType.CURRENT);
         verify(conversor).converterAccount(any(Account.class));
         verify(accountRepository).save(any(Account.class));
+    }
+
+    @Test
+    public void deveretornarExceptionSeCustomernaoExistir(){
+        String cpf = "225.456.787-54";
+        AccountPostDTO postDto = new AccountPostDTO(cpf, AccountType.CURRENT);
+
+        when(customerRepository.findByCpf(cpf)).thenReturn(Optional.empty());
+
+        assertThrows(CustomerDoesNotExistException.class, () -> accountPostService.createAccount(postDto));
+
+        verify(customerRepository).findByCpf(cpf);
     }
 }
