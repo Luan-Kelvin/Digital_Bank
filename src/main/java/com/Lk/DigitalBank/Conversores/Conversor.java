@@ -5,6 +5,7 @@ import com.Lk.DigitalBank.DTOs.CreditCard.CreditCardGetDTO;
 import com.Lk.DigitalBank.DTOs.CreditCradPurchase.CreditCardPurchaseGetDTO;
 import com.Lk.DigitalBank.DTOs.Customer.CustomerGetDTO;
 import com.Lk.DigitalBank.DTOs.Invoice.InvoiceGetDTO;
+import com.Lk.DigitalBank.DTOs.Transaction.TransactionGetDTO;
 import com.Lk.DigitalBank.Entity.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -68,6 +69,19 @@ public class Conversor {
                 i.getDueDate(),
                 i.getTotalAmount(),
                 i.getCreditCard().getId()
+        );
+    }
+
+    // CONVERTER TRANSACTION EM TRANSACTIONGETDTO
+    public TransactionGetDTO converterTransaction(Transaction t){
+
+        return new TransactionGetDTO(
+                t.getId(),
+                t.getTransactionType(),
+                t.getTransactionValue(),
+                t.getDateAndTime(),
+                t.getDescription(),
+                t.getAccount().getAccountNumber()
         );
     }
 }
