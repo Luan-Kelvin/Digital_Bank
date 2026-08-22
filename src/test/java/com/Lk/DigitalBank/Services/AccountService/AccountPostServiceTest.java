@@ -27,8 +27,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class AccountPostServiceTest {
@@ -65,9 +64,16 @@ public class AccountPostServiceTest {
         AccountGetDTO accountGetDTO = accountPostService.createAccount(postDto);
 
         assertEquals(customer.getName(), accountGetDTO.customerName());
+        assertEquals("12345", getDto.accountNumber());
+        assertEquals(BigDecimal.ZERO, getDto.balance());
+        assertEquals(AccountType.CURRENT, getDto.accountType());
+        assertEquals(AccountStatus.ACTIVE, getDto.accountStatus());
+
 
         verify(customerRepository).findByCpf(cpf);
         verify(accountRepository).existsByCustomerAndAccountType(customer, AccountType.CURRENT);
+        verify(numberGenerator).generateNumberAccount();
+        verify(accountRepository).save(any(Account.class));
         verify(conversor).converterAccount(any(Account.class));
         verify(accountRepository).save(any(Account.class));
     }
@@ -82,12 +88,14 @@ public class AccountPostServiceTest {
         assertThrows(CustomerDoesNotExistException.class, () -> accountPostService.createAccount(postDto));
 
         verify(customerRepository).findByCpf(cpf);
+        verify(accountRepository, never()).save(any(Account.class));
+        verify(numberGenerator, never()).generateNumberAccount();
     }
 
     @Test
     public void deveLancarExcecaoSeJaExistirUmaContaComMesmoTypeEMesmoCliente(){
         String cpf = "544.787.478-26";
-        Customer customer = new Customer();
+        Customer customer = new Customer("Laun Rocha", cpf, LocalDate.of(2002, 12, 21));
 
         AccountPostDTO postDto = new AccountPostDTO(cpf, AccountType.CURRENT);
 
@@ -96,7 +104,9 @@ public class AccountPostServiceTest {
 
         assertThrows(AccountAlreadyExistsException.class, () -> accountPostService.createAccount(postDto));
 
-        verify(customerRepository).existsByCpf(cpf);
+        verify(customerRepository).findByCpf(cpf);
         verify(accountRepository).existsByCustomerAndAccountType(customer, AccountType.CURRENT);
+        verify(numberGenerator, never()).generateNumberAccount();
+        verify(accountRepository, never()).save(any(Account.class));
     }
 }
