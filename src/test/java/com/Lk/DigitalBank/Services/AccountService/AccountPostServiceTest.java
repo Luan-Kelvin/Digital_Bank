@@ -8,6 +8,7 @@ import com.Lk.DigitalBank.ENUM.AccountStatus;
 import com.Lk.DigitalBank.ENUM.AccountType;
 import com.Lk.DigitalBank.Entity.Account;
 import com.Lk.DigitalBank.Entity.Customer;
+import com.Lk.DigitalBank.Exception.AccountAlreadyExistsException;
 import com.Lk.DigitalBank.Exception.CustomerDoesNotExistException;
 import com.Lk.DigitalBank.Repository.AccountRepository;
 import com.Lk.DigitalBank.Repository.CustomerRepository;
@@ -81,5 +82,21 @@ public class AccountPostServiceTest {
         assertThrows(CustomerDoesNotExistException.class, () -> accountPostService.createAccount(postDto));
 
         verify(customerRepository).findByCpf(cpf);
+    }
+
+    @Test
+    public void deveLancarExcecaoSeJaExistirUmaContaComMesmoTypeEMesmoCliente(){
+        String cpf = "544.787.478-26";
+        Customer customer = new Customer();
+
+        AccountPostDTO postDto = new AccountPostDTO(cpf, AccountType.CURRENT);
+
+        when(customerRepository.findByCpf(cpf)).thenReturn(Optional.of(customer));
+        when(accountRepository.existsByCustomerAndAccountType(customer, AccountType.CURRENT)).thenReturn(true);
+
+        assertThrows(AccountAlreadyExistsException.class, () -> accountPostService.createAccount(postDto));
+
+        verify(customerRepository).existsByCpf(cpf);
+        verify(accountRepository).existsByCustomerAndAccountType(customer, AccountType.CURRENT);
     }
 }
