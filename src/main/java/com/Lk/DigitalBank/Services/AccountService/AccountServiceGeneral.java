@@ -1,5 +1,7 @@
 package com.Lk.DigitalBank.Services.AccountService;
 
+import com.Lk.DigitalBank.Conversores.Conversor;
+import com.Lk.DigitalBank.DTOs.Transaction.TransactionGetDTO;
 import com.Lk.DigitalBank.ENUM.TransactionType;
 import com.Lk.DigitalBank.Entity.Account;
 import com.Lk.DigitalBank.Entity.Transaction;
@@ -21,10 +23,11 @@ public class AccountServiceGeneral {
     private final Logger logger = LoggerFactory.getLogger(AccountServiceGeneral.class);
     private final AccountRepository accountRepository;
     private final TransactionRepository transactionRepository;
+    private final Conversor conversor;
 
     // DEPOSITAR DINHEIRO
     @Transactional
-    public void deposit(String numberAccount, BigDecimal value){
+    public TransactionGetDTO deposit(String numberAccount, BigDecimal value){
         Account account = accountRepository.findByAccountNumber(numberAccount)
                 .orElseThrow(() -> new AccountDoesNotExistException(String.format("ERRO! Conta com número %s não existe.", numberAccount)));
 
@@ -41,11 +44,13 @@ public class AccountServiceGeneral {
         transactionRepository.save(transaction);
 
         logger.info(String.format("Déposito no valor de R$%s realizado com sucesso!", value));
+
+        return conversor.converterTransaction(transaction);
     }
 
     // SACAR DINHEIRO
     @Transactional
-    public void withdraw(String numberAccount, BigDecimal value){
+    public TransactionGetDTO withdraw(String numberAccount, BigDecimal value){
         Account account = accountRepository.findByAccountNumber(numberAccount)
                 .orElseThrow(() -> new AccountDoesNotExistException(String.format("ERRO! Conta com número %s não existe.", numberAccount)));
 
@@ -62,6 +67,8 @@ public class AccountServiceGeneral {
         transactionRepository.save(transaction);
 
         logger.info(String.format("Saque no valor de R$%s realizado com sucesso!", value));
+
+        return conversor.converterTransaction(transaction);
     }
 
 }
