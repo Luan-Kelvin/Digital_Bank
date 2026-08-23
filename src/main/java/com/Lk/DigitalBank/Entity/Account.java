@@ -136,4 +136,9 @@ public class Account {
     public void addCreditCard(CreditCard creditCard){
         this.creditCard = creditCard;
     }
+
+    // DESATIVAR CONTA
+    public void blockedAccount(){
+        this.accountStatus = AccountStatus.BLOCKED;
+    }
 }
