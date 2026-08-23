@@ -32,9 +32,11 @@ public class Account {
     @Column(nullable = false)
     private BigDecimal balance = BigDecimal.ZERO;
 
+
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     @ToString.Include
+    @Setter
     private AccountType accountType = AccountType.CURRENT;
 
     @Column(nullable = false)
@@ -141,4 +143,5 @@ public class Account {
     public void blockedAccount(){
         this.accountStatus = AccountStatus.BLOCKED;
     }
+
 }
