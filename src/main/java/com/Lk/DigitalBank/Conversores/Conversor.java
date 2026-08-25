@@ -10,6 +10,8 @@ import com.Lk.DigitalBank.Entity.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class Conversor {
@@ -28,11 +30,13 @@ public class Conversor {
 
     // CONVERTER CUSTOMER PARA CUSTOMERGETDTO
     public CustomerGetDTO converterCustomer(Customer customer){
+        List<String> accounts = customer.getAccounts().stream().map(Account::getAccountNumber).toList();
+
         return new CustomerGetDTO(
                 customer.getId(),
                 customer.getName(),
                 customer.getDateOfBirth(),
-                customer.getAccounts()
+                accounts
         );
     }
 
