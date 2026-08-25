@@ -3,13 +3,13 @@ package com.Lk.DigitalBank.Services.CustomerService;
 import com.Lk.DigitalBank.Conversores.Conversor;
 import com.Lk.DigitalBank.DTOs.Customer.CustomerGetDTO;
 import com.Lk.DigitalBank.Entity.Customer;
+import com.Lk.DigitalBank.Exception.CustomerDoesNotExistException;
 import com.Lk.DigitalBank.Repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -32,7 +32,24 @@ public class CustomerGetService {
                 .map(conversor::converterCustomer)
                 .toList();
 
-
         return dtos;
     }
+
+    // BUSCAR POR ID
+    public CustomerGetDTO findById(Long id){
+        Customer customer = customerRepository.findById(id)
+                .orElseThrow(() -> new CustomerDoesNotExistException(String.format("ERRO! Clientre com ID = Nº %s não existe.", id)));
+
+        return conversor.converterCustomer(customer);
+    }
+
+    // BUSCAR POR CPF
+    public CustomerGetDTO findByCPF(String cpf){
+        Customer customer = customerRepository.findByCpf(cpf)
+                .orElseThrow(() -> new CustomerDoesNotExistException(String.format("ERRO! Cliente com CPF: %s não existe", cpf)));
+
+        return conversor.converterCustomer(customer);
+    }
+
+
 }
