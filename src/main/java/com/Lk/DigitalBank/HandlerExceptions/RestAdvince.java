@@ -279,4 +279,17 @@ public class RestAdvince {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(erro);
     }
+
+    @ExceptionHandler(NameSameThePreviousOneException.class)
+    public ResponseEntity<ErrorResponse> sameName(NameSameThePreviousOneException e, HttpServletRequest request){
+        ErrorResponse erro = new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.CONFLICT.value(),
+                "Nome igual ao anterior",
+                e.getMessage(),
+                request.getRequestURI()
+        );
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(erro);
+    }
 }
