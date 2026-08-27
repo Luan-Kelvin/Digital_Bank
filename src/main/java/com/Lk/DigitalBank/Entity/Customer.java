@@ -23,12 +23,14 @@ public class Customer {
     @EqualsAndHashCode.Include
     private Long id;
 
+    @Setter
     @Column(nullable = false)
     private String name;
 
     @Column(nullable = false, unique = true)
     private String cpf;
 
+    @Setter
     @Column(nullable = false)
     private LocalDate dateOfBirth;
 
