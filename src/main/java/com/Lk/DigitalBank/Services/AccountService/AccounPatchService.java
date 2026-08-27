@@ -1,5 +1,8 @@
 package com.Lk.DigitalBank.Services.AccountService;
 
+import com.Lk.DigitalBank.Conversores.Conversor;
+import com.Lk.DigitalBank.DTOs.Account.AccountGetDTO;
+import com.Lk.DigitalBank.DTOs.Account.AccountPatchDTO;
 import com.Lk.DigitalBank.ENUM.AccountType;
 import com.Lk.DigitalBank.Entity.Account;
 import com.Lk.DigitalBank.Exception.AccountDoesNotExistException;
@@ -15,24 +18,18 @@ import org.springframework.stereotype.Service;
 public class AccounPatchService {
     private final Logger logger = LoggerFactory.getLogger(AccounPatchService.class);
     private final AccountRepository accountRepository;
+    private final Conversor conversor;
 
     // ALTERAR TYPE
-    public void updateType(String type, String accountNumber){
-        Account account = accountRepository.findByAccountNumber(accountNumber)
-                .orElseThrow(() -> new AccountDoesNotExistException(String.format("ERRO! Conta com Nº %s não existe.", accountNumber)));
+    public AccountGetDTO updateType(AccountPatchDTO dto){
+        Account account = accountRepository.findByAccountNumber(dto.accountNumber())
+                .orElseThrow(() -> new AccountDoesNotExistException(String.format("ERRO! Conta com Nº %s não existe.", dto.accountNumber())));
 
-        AccountType newType = null;
+        String oldName = account.getAccountType().name();
+        account.setAccountType(dto.type());
+        logger.info(String.format("Type de conta atualizado com sucesso! ANTIGO: %s | NOVO: %s", oldName, account.getAccountType().name()));
+        accountRepository.save(account);
 
-        if (type.equalsIgnoreCase("current")){
-            newType = AccountType.CURRENT;
-        } else if (type.equalsIgnoreCase("savings")) {
-            newType = AccountType.SAVINGS;
-        }else {
-            throw new InvalidAccountTypeException(String.format("ERRO! Type %s é inválido.", type));
-        }
-
-        if (newType != account.getAccountType()){
-            account.setAccountType(newType);
-        }
+        return conversor.converterAccount(account);
     }
 }
