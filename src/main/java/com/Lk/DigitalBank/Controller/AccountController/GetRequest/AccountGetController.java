@@ -1,8 +1,11 @@
 package com.Lk.DigitalBank.Controller.AccountController.GetRequest;
 
+import com.Lk.DigitalBank.DTOs.Account.AccountBalanceDTO;
 import com.Lk.DigitalBank.DTOs.Account.AccountGetDTO;
 import com.Lk.DigitalBank.Services.AccountService.AccountGetService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,6 +29,12 @@ public class AccountGetController {
     @GetMapping("/id/{id}")
     public AccountGetDTO searchById(@PathVariable("id") Long id){
         return accountGetService.findById(id);
+    }
+
+    // CONSULTAR SALDO
+    @GetMapping("/saldo/{accountNumber}")
+    public ResponseEntity<AccountBalanceDTO> checkBalance(@PathVariable("accountNumber") String accountNumber){
+        return ResponseEntity.status(HttpStatus.OK).body(accountGetService.checkBalance(accountNumber));
     }
 
     // BUSCAR POR NÚMERO CONTA
