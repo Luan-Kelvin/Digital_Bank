@@ -43,7 +43,7 @@ public class AccountGetServiceTest {
 
         Account account = new Account();
 
-        AccountGetDTO dto = new AccountGetDTO("12345", BigDecimal.ZERO, AccountType.CURRENT, AccountStatus.ACTIVE, 1L, "teste");
+        AccountGetDTO dto = new AccountGetDTO(1L, "12345", BigDecimal.ZERO, AccountType.CURRENT, AccountStatus.ACTIVE, 1L, "teste");
 
         when(accountRepository.findById(id)).thenReturn(Optional.of(account));
 
@@ -118,7 +118,7 @@ public class AccountGetServiceTest {
 
         Account account = new Account();
 
-        AccountGetDTO dto = new AccountGetDTO("12345", BigDecimal.ZERO, AccountType.CURRENT, AccountStatus.ACTIVE, 1L, "teste");
+        AccountGetDTO dto = new AccountGetDTO(1L, "12345", BigDecimal.ZERO, AccountType.CURRENT, AccountStatus.ACTIVE, 1L, "teste");
 
         when(accountRepository.findByAccountNumber(number)).thenReturn(Optional.of(account));
 
@@ -148,7 +148,7 @@ public class AccountGetServiceTest {
     public void deveRetornarListaComTodasAsContasDoBanco(){
         Account account = new Account();
 
-        AccountGetDTO dto = new AccountGetDTO("12345", BigDecimal.ZERO, AccountType.CURRENT, AccountStatus.ACTIVE, 1L, "teste");
+        AccountGetDTO dto = new AccountGetDTO(1L, "12345", BigDecimal.ZERO, AccountType.CURRENT, AccountStatus.ACTIVE, 1L, "teste");
 
         account.addNumberAccount("12345");
 
@@ -175,7 +175,7 @@ public class AccountGetServiceTest {
     public void deveRealizarBuscaPorCPFDeCliente(){
         Account account = new Account();
 
-        AccountGetDTO dto1 = new AccountGetDTO("12345", BigDecimal.ZERO, AccountType.CURRENT, AccountStatus.ACTIVE, 1L, "teste");
+        AccountGetDTO dto1 = new AccountGetDTO(1L, "12345", BigDecimal.ZERO, AccountType.CURRENT, AccountStatus.ACTIVE, 1L, "teste");
 
         String cpf = "123.456.789-22";
 
