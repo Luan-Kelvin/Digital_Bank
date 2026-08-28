@@ -1,11 +1,13 @@
 package com.Lk.DigitalBank.Services.AccountService;
 
 import com.Lk.DigitalBank.Conversores.Conversor;
+import com.Lk.DigitalBank.DTOs.Account.AccountBalanceDTO;
 import com.Lk.DigitalBank.DTOs.Account.AccountGetDTO;
 import com.Lk.DigitalBank.ENUM.AccountStatus;
 import com.Lk.DigitalBank.ENUM.AccountType;
 import com.Lk.DigitalBank.Entity.Account;
 import com.Lk.DigitalBank.Exception.AccountDoesNotExistException;
+import com.Lk.DigitalBank.Exception.AccountInactiveException;
 import com.Lk.DigitalBank.Exception.InvalidCPFException;
 import com.Lk.DigitalBank.Repository.AccountRepository;
 import org.junit.jupiter.api.Test;
@@ -66,6 +68,47 @@ public class AccountGetServiceTest {
         assertThrows(AccountDoesNotExistException.class, () -> accountGetService.findById(id));
 
         verify(accountRepository).findById(id);
+    }
+
+    @Test
+    public void deveRetornarSaldo(){
+        Account account = new Account();
+        account.addNumberAccount("12345");
+        account.deposit(BigDecimal.valueOf(200));
+
+        when(accountRepository.findByAccountNumber(account.getAccountNumber())).thenReturn(Optional.of(account));
+
+        AccountBalanceDTO dto = accountGetService.checkBalance(account.getAccountNumber());
+
+        assertEquals(dto.balance(), account.getBalance());
+
+        verify(accountRepository).findByAccountNumber(account.getAccountNumber());
+
+    }
+
+    @Test
+    public void deveLancarExcecaoSeContaNaoExistirParaConsultaDeSaldo(){
+        Account account = new Account();
+        account.addNumberAccount("12345");
+
+        when(accountRepository.findByAccountNumber("12345")).thenReturn(Optional.empty());
+
+        assertThrows(AccountDoesNotExistException.class, () -> accountGetService.checkBalance("12345"));
+
+        verify(accountRepository).findByAccountNumber("12345");
+    }
+
+    @Test
+    public void deveLancarExcecaoSeContaEstiverInativaParaConsultaDeSaldo(){
+        Account account = new Account();
+        account.addNumberAccount("12345");
+        account.blockedAccount();
+
+        when(accountRepository.findByAccountNumber("12345")).thenReturn(Optional.of(account));
+
+        assertThrows(AccountInactiveException.class, () -> accountGetService.checkBalance("12345"));
+
+        verify(accountRepository).findByAccountNumber("12345");
     }
 
 
