@@ -6,6 +6,7 @@ import com.Lk.DigitalBank.ENUM.AccountType;
 import java.math.BigDecimal;
 
 public record AccountGetDTO(
+        Long id,
         String accountNumber,
         BigDecimal balance,
         AccountType accountType,
