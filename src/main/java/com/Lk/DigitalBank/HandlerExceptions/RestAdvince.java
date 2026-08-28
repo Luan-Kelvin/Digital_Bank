@@ -292,4 +292,18 @@ public class RestAdvince {
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(erro);
     }
+
+    @ExceptionHandler(PixTransferFailedException.class)
+    public ResponseEntity<ErrorResponse> pixfailed(PixTransferFailedException e, HttpServletRequest request){
+
+        ErrorResponse erro = new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.CONFLICT.value(),
+                "Erro! Transferência não realizada.",
+                e.getMessage(),
+                request.getRequestURI()
+        );
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(erro);
+    }
 }
