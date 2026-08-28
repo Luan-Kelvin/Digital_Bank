@@ -15,10 +15,20 @@ public class AccountPatchController {
 
     private final AccounPatchService accounPatchService;
 
+
+    // ALTERAR TYPE DA CONTA
     @PatchMapping("/type")
     public ResponseEntity<AccountGetDTO> alterType(@RequestBody AccountPatchDTO dto){
 
         return ResponseEntity.ok().body(accounPatchService.updateType(dto));
+    }
+
+    // BLOQUEAR CONTA
+    @PatchMapping("/block/{id}")
+    public ResponseEntity<Void> blockAccount(@PathVariable("id") Long id){
+        accounPatchService.blockAccount(id);
+
+        return ResponseEntity.noContent().build();
     }
 
 }
