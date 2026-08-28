@@ -1,14 +1,12 @@
 package com.Lk.DigitalBank.Services.AccountService;
 
 import com.Lk.DigitalBank.Conversores.Conversor;
+import com.Lk.DigitalBank.DTOs.Account.AccountBalanceDTO;
 import com.Lk.DigitalBank.DTOs.Account.AccountGetDTO;
 import com.Lk.DigitalBank.ENUM.AccountStatus;
 import com.Lk.DigitalBank.ENUM.AccountType;
 import com.Lk.DigitalBank.Entity.Account;
-import com.Lk.DigitalBank.Exception.AccountDoesNotExistException;
-import com.Lk.DigitalBank.Exception.InvalidAccountStatusException;
-import com.Lk.DigitalBank.Exception.InvalidAccountTypeException;
-import com.Lk.DigitalBank.Exception.InvalidCPFException;
+import com.Lk.DigitalBank.Exception.*;
 import com.Lk.DigitalBank.Repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -59,6 +57,18 @@ public class AccountGetService {
                 .orElseThrow(() -> new AccountDoesNotExistException(String.format("ERRO! Account com número %s não existe.", number)));
 
         return conversor.converterAccount(account);
+    }
+
+    // CONSULTAR SALDO
+    public AccountBalanceDTO checkBalance(String accountNumber){
+        Account account = accountRepository.findByAccountNumber(accountNumber)
+                .orElseThrow(() -> new AccountDoesNotExistException(String.format("ERRO! Conta com Nº %s não existe.", accountNumber)));
+
+        if (!account.isActive()){
+            throw new AccountInactiveException(String.format("ERRO! Conta Nº %s está inativa.", accountNumber));
+        }
+
+        return new AccountBalanceDTO(account.getBalance());
     }
 
     // BUSCAR POR STATUS DA CONTA
