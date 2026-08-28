@@ -6,6 +6,7 @@ import com.Lk.DigitalBank.DTOs.Account.AccountPatchDTO;
 import com.Lk.DigitalBank.ENUM.AccountType;
 import com.Lk.DigitalBank.Entity.Account;
 import com.Lk.DigitalBank.Exception.AccountDoesNotExistException;
+import com.Lk.DigitalBank.Exception.AccountInactiveException;
 import com.Lk.DigitalBank.Exception.InvalidAccountTypeException;
 import com.Lk.DigitalBank.Repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
@@ -31,5 +32,19 @@ public class AccounPatchService {
         accountRepository.save(account);
 
         return conversor.converterAccount(account);
+    }
+
+    // BLOQUEAR CONTA
+    public void blockAccount(Long id){
+        Account account = accountRepository.findById(id)
+                .orElseThrow(() -> new AccountDoesNotExistException(String.format("ERRO! Conta com ID = %s não existe.", id)));
+
+        if (!account.isActive()){
+            throw new AccountInactiveException("ERRO! Conta esta inátiva");
+        }
+
+        account.blockedAccount();
+        accountRepository.save(account);
+        logger.info(String.format("Conta com ID = %s esta bloqueada.", id));
     }
 }
