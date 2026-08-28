@@ -53,7 +53,7 @@ public class AccountPostServiceTest {
 
         Account account = new Account();
         Customer customer = new Customer("Ronaldinho", cpf, LocalDate.of(2005, 12, 15));
-        AccountGetDTO getDto = new AccountGetDTO("12345", BigDecimal.ZERO, AccountType.CURRENT, AccountStatus.ACTIVE, 1L, "Ronaldinho");
+        AccountGetDTO getDto = new AccountGetDTO(1L, "12345", BigDecimal.ZERO, AccountType.CURRENT, AccountStatus.ACTIVE, 1L, "Ronaldinho");
         AccountPostDTO postDto = new AccountPostDTO(cpf, AccountType.CURRENT);
 
         when(customerRepository.findByCpf(cpf)).thenReturn(Optional.of(customer));
