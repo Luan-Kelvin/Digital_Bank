@@ -13,6 +13,6 @@ public class DigitalBankApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-
+		// TESTAR E CRIAR ENDPOINT PARA TRNSFERÊNCIA PIX. E CRIAR TESTES TAMBEM
 	}
 }
