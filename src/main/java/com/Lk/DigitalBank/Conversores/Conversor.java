@@ -19,6 +19,7 @@ public class Conversor {
     // CONVERTER ACCOUNT PARA ACCOUNTGETDTO
     public AccountGetDTO converterAccount(Account account){
         return new AccountGetDTO(
+                account.getId(),
                 account.getAccountNumber(),
                 account.getBalance(),
                 account.getAccountType(),
