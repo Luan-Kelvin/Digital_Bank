@@ -2,6 +2,7 @@ package com.Lk.DigitalBank.Entity;
 
 import com.Lk.DigitalBank.ENUM.AccountStatus;
 import com.Lk.DigitalBank.ENUM.AccountType;
+import com.Lk.DigitalBank.ENUM.TransactionType;
 import com.Lk.DigitalBank.Exception.InsufficientBalanceWithdraw;
 import com.Lk.DigitalBank.Exception.InvalidDepositAmountException;
 import jakarta.persistence.*;
@@ -121,6 +122,35 @@ public class Account {
         }
 
         balance = balance.subtract(value);
+    }
+
+    // FAZER PIX
+    public Transaction makeAPixTransfer(Account accountRecipient, BigDecimal value){
+        if (this.balance.compareTo(value) < 0){
+            throw new InsufficientBalanceWithdraw("ERRO! Saldo insuficiente para trnsferência PIX.");
+        }
+
+        this.balance = this.balance.subtract(value);
+        accountRecipient.receivePixTransfer(this, value);
+
+        Transaction transaction = new Transaction(
+                TransactionType.PIX_SENT,
+                value, String.format("Pix enviado para %s ", accountRecipient.getCustomer().getName()));
+
+        this.addTransaction(transaction);
+        return transaction;
+    }
+
+    // RECEBER PIX
+    public Transaction receivePixTransfer(Account accountSent, BigDecimal value){
+        this.balance = this.balance.add(value);
+
+        Transaction transaction = new Transaction(
+                TransactionType.PIX_RECEVIED,
+                value, String.format("Pix recebido de %s ", accountSent.getCustomer().getName()));
+
+        this.addTransaction(transaction);
+        return transaction;
     }
 
     //ADICIONAR CLIENTE
