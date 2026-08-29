@@ -35,7 +35,7 @@ public class AccountPatchServiceTest {
     private Conversor conversor;
 
     @InjectMocks
-    private AccounPatchService accounPatchService;
+    private AccountPatchService accounPatchService;
 
     @Test
     public void deveAlterarTypeDaConta(){
