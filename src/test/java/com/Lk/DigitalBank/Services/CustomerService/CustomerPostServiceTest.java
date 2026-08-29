@@ -3,6 +3,7 @@ package com.Lk.DigitalBank.Services.CustomerService;
 import com.Lk.DigitalBank.Conversores.Conversor;
 import com.Lk.DigitalBank.DTOs.Customer.CustomerGetDTO;
 import com.Lk.DigitalBank.DTOs.Customer.CustomerPostDTO;
+import com.Lk.DigitalBank.ENUM.CustomerStatus;
 import com.Lk.DigitalBank.Entity.Customer;
 import com.Lk.DigitalBank.Exception.CustomerAlreadyExistsException;
 import com.Lk.DigitalBank.Repository.CustomerRepository;
@@ -33,12 +34,12 @@ public class CustomerPostServiceTest {
 
     @Test
     public void deveCriarNovoCustomerERetornarCustomerGetDTO(){
-        Customer customer = new Customer("Joaquim", "555.424.825-22", LocalDate.of(2002, 3, 14));
-        CustomerGetDTO dto = new CustomerGetDTO(1L, "Joaquim", LocalDate.of(2002, 3, 14), List.of());
-        CustomerPostDTO postDto = new CustomerPostDTO("Joaquim", "555.424.825-22", LocalDate.of(2002, 3, 14));
+        Customer customer = new Customer("Joaquim", "555.424.825-22", LocalDate.of(2002, 2, 12));
+        CustomerGetDTO customerGetDTO = new CustomerGetDTO(1L, "Joaquim", LocalDate.of(2002, 2, 12 ), CustomerStatus.INACTIVE, List.of());
+        CustomerPostDTO postDto = new CustomerPostDTO("Joaquim", "555.424.825-22", LocalDate.of(2002, 2, 12));
 
         when(customerRepository.existsByCpf(customer.getCpf())).thenReturn(false);
-        when(conversor.converterCustomer(customer)).thenReturn(dto);
+        when(conversor.converterCustomer(customer)).thenReturn(customerGetDTO);
 
         CustomerGetDTO resultado = customerPostService.createCustomer(postDto);
 
