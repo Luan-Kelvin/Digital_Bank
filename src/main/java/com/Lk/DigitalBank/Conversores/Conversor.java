@@ -37,6 +37,7 @@ public class Conversor {
                 customer.getId(),
                 customer.getName(),
                 customer.getDateOfBirth(),
+                customer.getCustomerStatus(),
                 accounts
         );
     }
