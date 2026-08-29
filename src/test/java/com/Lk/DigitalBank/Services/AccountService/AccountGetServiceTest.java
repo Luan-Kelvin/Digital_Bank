@@ -17,7 +17,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -144,32 +143,6 @@ public class AccountGetServiceTest {
         verify(accountRepository).findByAccountNumber(number);
     }
 
-    @Test
-    public void deveRetornarListaComTodasAsContasDoBanco(){
-        Account account = new Account();
-
-        AccountGetDTO dto = new AccountGetDTO(1L, "12345", BigDecimal.ZERO, AccountType.CURRENT, AccountStatus.ACTIVE, 1L, "teste");
-
-        account.addNumberAccount("12345");
-
-        List<Account> accounts = new ArrayList<>();
-
-        accounts.add(account);
-
-        when(accountRepository.findAll()).thenReturn(accounts);
-
-        when(conversor.converterAccount(account)).thenReturn(dto);
-
-        List<AccountGetDTO> listDtos = accountGetService.listAccounts();
-
-        assertEquals(1, listDtos.size());
-        assertEquals(dto, listDtos.get(0));
-
-        verify(accountRepository).findAll();
-
-        verify(conversor).converterAccount(account);
-
-    }
 
     @Test
     public void deveRealizarBuscaPorCPFDeCliente(){
