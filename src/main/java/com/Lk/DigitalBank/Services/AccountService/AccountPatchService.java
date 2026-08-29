@@ -3,11 +3,9 @@ package com.Lk.DigitalBank.Services.AccountService;
 import com.Lk.DigitalBank.Conversores.Conversor;
 import com.Lk.DigitalBank.DTOs.Account.AccountGetDTO;
 import com.Lk.DigitalBank.DTOs.Account.AccountPatchDTO;
-import com.Lk.DigitalBank.ENUM.AccountType;
 import com.Lk.DigitalBank.Entity.Account;
 import com.Lk.DigitalBank.Exception.AccountDoesNotExistException;
 import com.Lk.DigitalBank.Exception.AccountInactiveException;
-import com.Lk.DigitalBank.Exception.InvalidAccountTypeException;
 import com.Lk.DigitalBank.Repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -16,8 +14,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class AccounPatchService {
-    private final Logger logger = LoggerFactory.getLogger(AccounPatchService.class);
+public class AccountPatchService {
+    private final Logger logger = LoggerFactory.getLogger(AccountPatchService.class);
     private final AccountRepository accountRepository;
     private final Conversor conversor;
 
