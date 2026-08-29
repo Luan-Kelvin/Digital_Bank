@@ -19,9 +19,25 @@ public class CustomerGetService {
     private final CustomerRepository customerRepository;
     private final Conversor conversor;
 
-    // LISTAR CLIENTES EXISTENTES
-    public List<CustomerGetDTO> listCustomer(){
-        List<Customer> customers = customerRepository.findAll();
+    // LISTAR CLIENTES ATIVOS
+    public List<CustomerGetDTO> listCustomerActives(){
+        List<Customer> customers = customerRepository.searchActives();
+
+        if (customers.isEmpty()){
+            logger.info("Nenhum cliente cadastrado no banco.");
+            return List.of();
+        }
+
+        List<CustomerGetDTO> dtos = customers.stream()
+                .map(conversor::converterCustomer)
+                .toList();
+
+        return dtos;
+    }
+
+    // LISTAR CLIENTES ATIVOS
+    public List<CustomerGetDTO> listCustomerInactives(){
+        List<Customer> customers = customerRepository.searchInactives();
 
         if (customers.isEmpty()){
             logger.info("Nenhum cliente cadastrado no banco.");
@@ -38,7 +54,7 @@ public class CustomerGetService {
     // BUSCAR POR ID
     public CustomerGetDTO findById(Long id){
         Customer customer = customerRepository.findById(id)
-                .orElseThrow(() -> new CustomerDoesNotExistException(String.format("ERRO! Clientre com ID = Nº %s não existe.", id)));
+                .orElseThrow(() -> new CustomerDoesNotExistException(String.format("ERRO! Cliente com ID = Nº %s não existe.", id)));
 
         return conversor.converterCustomer(customer);
     }
