@@ -2,6 +2,7 @@ package com.Lk.DigitalBank.Repository;
 
 import com.Lk.DigitalBank.Entity.Customer;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -20,4 +21,20 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
     // VER SE JA EXISTE CLIENTE COM CPF
     Boolean existsByCpf(String cpf);
+
+    // BUSCAR CLIENTES ATIVOS
+    @Query("""
+            SELECT c
+            FROM Customer c
+            WHERE c.customerStatus = 'ACTIVE'
+            """)
+    List<Customer> searchActives();
+
+    // BUSCAR CLIENTES INATIVOS
+    @Query("""
+            SELECT c
+            FROM Customer c
+            WHERE c.customerStatus = 'INACTIVE'
+            """)
+    List<Customer> searchInactives();
 }
