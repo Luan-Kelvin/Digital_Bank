@@ -19,8 +19,13 @@ public class CustomerGetController {
     private final CustomerGetService customerGetService;
 
     @GetMapping
-    public ResponseEntity<List<CustomerGetDTO>> listCustomers(){
-        return ResponseEntity.status(HttpStatus.OK).body(customerGetService.listCustomer());
+    public ResponseEntity<List<CustomerGetDTO>> listCustomersActives(){
+        return ResponseEntity.status(HttpStatus.OK).body(customerGetService.listCustomerActives());
+    }
+
+    @GetMapping("/inativos")
+    public ResponseEntity<List<CustomerGetDTO>> listCustomersInactives(){
+        return ResponseEntity.status(HttpStatus.OK).body(customerGetService.listCustomerInactives());
     }
 
     @GetMapping("/id/{id}")
