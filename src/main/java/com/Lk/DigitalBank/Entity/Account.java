@@ -131,7 +131,6 @@ public class Account {
         }
 
         this.balance = this.balance.subtract(value);
-        accountRecipient.receivePixTransfer(this, value);
 
         Transaction transaction = new Transaction(
                 TransactionType.PIX_SENT,

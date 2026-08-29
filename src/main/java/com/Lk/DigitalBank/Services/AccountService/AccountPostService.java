@@ -4,13 +4,16 @@ import com.Lk.DigitalBank.Components.NumberGenerator;
 import com.Lk.DigitalBank.Conversores.Conversor;
 import com.Lk.DigitalBank.DTOs.Account.AccountGetDTO;
 import com.Lk.DigitalBank.DTOs.Account.AccountPostDTO;
+import com.Lk.DigitalBank.DTOs.Account.TransferPixDTO;
 import com.Lk.DigitalBank.DTOs.Transaction.TransactionGetDTO;
+import com.Lk.DigitalBank.DTOs.Transaction.TransactionPixDTO;
 import com.Lk.DigitalBank.Entity.Account;
 import com.Lk.DigitalBank.Entity.Customer;
 import com.Lk.DigitalBank.Entity.Transaction;
 import com.Lk.DigitalBank.Exception.*;
 import com.Lk.DigitalBank.Repository.AccountRepository;
 import com.Lk.DigitalBank.Repository.CustomerRepository;
+import com.Lk.DigitalBank.Repository.TransactionRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -18,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +30,7 @@ public class AccountPostService {
     private final Conversor conversor;
     private final AccountRepository accountRepository;
     private final CustomerRepository customerRepository;
+    private final TransactionRepository transactionRepository;
     private final NumberGenerator numberGenerator;
 
     // CRIAR CONTA
@@ -50,27 +55,23 @@ public class AccountPostService {
 
     // FAZER PIX
     @Transactional
-    public TransactionGetDTO transferViaPix(
-            String senderAccount,
-            String recipientAccount,
-            BigDecimal value
-    ) {
+    public TransactionPixDTO transferViaPix(TransferPixDTO dto) {
 
-        Account recipient = accountRepository.findByAccountNumber(recipientAccount)
-                .orElseThrow(() -> new AccountDoesNotExistException(String.format("ERRO! Conta com Nº %s não existe.", recipientAccount)));
+        Account recipient = accountRepository.findByAccountNumber(dto.recipientAccount())
+                .orElseThrow(() -> new AccountDoesNotExistException(String.format("ERRO! Conta com Nº %s não existe.", dto.recipientAccount())));
 
-        Account sender = accountRepository.findByAccountNumber(senderAccount)
-                .orElseThrow(() -> new AccountDoesNotExistException(String.format("ERRO! Conta com Nº %s não existe", senderAccount)));
+        Account sender = accountRepository.findByAccountNumber(dto.senderAccount())
+                .orElseThrow(() -> new AccountDoesNotExistException(String.format("ERRO! Conta com Nº %s não existe", dto.senderAccount())));
 
         if (!recipient.isActive()){
-            throw new AccountInactiveException(String.format("ERRO! Conta Nº %s  esta INATIVA.", recipientAccount));
+            throw new AccountInactiveException(String.format("ERRO! Conta Nº %s  esta INATIVA.", dto.recipientAccount()));
         }
 
         if (!sender.isActive()){
-            throw new AccountInactiveException(String.format("ERRO! Conta Nº %s  esta INATIVA.", senderAccount));
+            throw new AccountInactiveException(String.format("ERRO! Conta Nº %s  esta INATIVA.", dto.senderAccount()));
         }
 
-        if (value.compareTo(BigDecimal.ZERO) <= 0){
+        if (dto.value().compareTo(BigDecimal.ZERO) <= 0){
             throw new IllegalArgumentException("ERRO! Valor de transferência deve ser maior que 0.");
         }
 
@@ -78,13 +79,25 @@ public class AccountPostService {
             throw new PixTransferFailedException("ERRO! Contas precisam ser diferentes para realizar PIX.");
         }
 
-        Transaction transaction = sender.makeAPixTransfer(recipient, value);
+        Transaction transactionSender = sender.makeAPixTransfer(recipient, dto.value());
+        Transaction transactionRecipient = recipient.receivePixTransfer(sender, dto.value());
         accountRepository.save(sender);
         accountRepository.save(recipient);
+        transactionRepository.save(transactionSender);
+        transactionRepository.save(transactionRecipient);
 
-        logger.info(String.format("%s fez um pix no valor de R$%s para %s.", sender.getCustomer().getName(), value, recipient.getCustomer().getName()));
+        logger.info(String.format("%s fez um pix no valor de R$%s para %s.", sender.getCustomer().getName(), dto.value(), recipient.getCustomer().getName()));
 
-        return conversor.converterTransaction(transaction);
-
+        return new TransactionPixDTO(
+                LocalDateTime.now(),
+                dto.value(),
+                String.format
+                        ("Pix enviado por %s para %s no valor de R$%s",
+                                sender.getCustomer().getName(),
+                                recipient.getCustomer().getName(),
+                                dto.value()),
+                sender.getAccountNumber(),
+                recipient.getAccountNumber()
+                );
     }
 }

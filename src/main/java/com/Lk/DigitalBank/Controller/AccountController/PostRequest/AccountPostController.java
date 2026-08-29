@@ -3,7 +3,9 @@ package com.Lk.DigitalBank.Controller.AccountController.PostRequest;
 import com.Lk.DigitalBank.DTOs.Account.AccountGetDTO;
 import com.Lk.DigitalBank.DTOs.Account.AccountPostDTO;
 import com.Lk.DigitalBank.DTOs.Account.DepositAndWithDrawAccountDTO;
+import com.Lk.DigitalBank.DTOs.Account.TransferPixDTO;
 import com.Lk.DigitalBank.DTOs.Transaction.TransactionGetDTO;
+import com.Lk.DigitalBank.DTOs.Transaction.TransactionPixDTO;
 import com.Lk.DigitalBank.Services.AccountService.AccountPostService;
 import com.Lk.DigitalBank.Services.AccountService.AccountServiceGeneral;
 import jakarta.validation.Valid;
@@ -46,6 +48,12 @@ public class AccountPostController {
         TransactionGetDTO transaction = accountServiceGeneral.withdraw(dto.accountNumber(), dto.value());
 
         return ResponseEntity.status(HttpStatus.OK).body(transaction);
+    }
+
+    // FAZER TRANSFERÊNCIA PIX
+    @PostMapping("/pix")
+    public ResponseEntity<TransactionPixDTO> transferPix(@RequestBody TransferPixDTO dto){
+        return ResponseEntity.status(HttpStatus.OK).body(accountPostService.transferViaPix(dto));
     }
 
 }
