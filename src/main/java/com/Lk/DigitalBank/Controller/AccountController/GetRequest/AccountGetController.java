@@ -19,10 +19,16 @@ import java.util.List;
 public class AccountGetController {
     private final AccountGetService accountGetService;
 
-    // BUSCAR TODAS AS CONTAS CADASTRADAS
+    // BUSCAR TODAS AS CONTAS ATIVAS
     @GetMapping
-    public List<AccountGetDTO> listAccounts(){
-        return accountGetService.listAccounts();
+    public List<AccountGetDTO> listAccountsActives(){
+        return accountGetService.listAccountsAcitives();
+    }
+
+    // BUSCAR TODAS AS CONTAS INATIVAS
+    @GetMapping("/inativas")
+    public List<AccountGetDTO> listAccountsInactives(){
+        return accountGetService.listAccountsInactive();
     }
 
     // BUSCR  POR ID
