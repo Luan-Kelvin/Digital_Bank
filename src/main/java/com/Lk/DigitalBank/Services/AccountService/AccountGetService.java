@@ -25,9 +25,27 @@ public class AccountGetService {
     private final AccountRepository accountRepository;
 
 
-    // LISTAR CONTAS EXISTENTE NO BANCO
-    public List<AccountGetDTO> listAccounts(){
-        List<Account> accounts = accountRepository.findAll();
+    // LISTAR CONTAS ATIVAS NO BANCO
+    public List<AccountGetDTO> listAccountsAcitives(){
+        List<Account> accounts = accountRepository.searchActives();
+
+        if (accounts.isEmpty()){
+            logger.info("Nenhuma conta encontrada.");
+            return List.of();
+        }
+
+        List<AccountGetDTO> dtos = new ArrayList<>();
+
+        accounts.forEach(a -> {
+            dtos.add(conversor.converterAccount(a));
+        });
+
+        return dtos;
+    }
+
+    // LISTAR CONTAS INATIVAS NO BANCO
+    public List<AccountGetDTO> listAccountsInactive(){
+        List<Account> accounts = accountRepository.searchInactives();
 
         if (accounts.isEmpty()){
             logger.info("Nenhuma conta encontrada.");
