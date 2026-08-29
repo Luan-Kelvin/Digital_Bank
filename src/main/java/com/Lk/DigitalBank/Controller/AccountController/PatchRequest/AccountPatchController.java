@@ -2,7 +2,7 @@ package com.Lk.DigitalBank.Controller.AccountController.PatchRequest;
 
 import com.Lk.DigitalBank.DTOs.Account.AccountGetDTO;
 import com.Lk.DigitalBank.DTOs.Account.AccountPatchDTO;
-import com.Lk.DigitalBank.Services.AccountService.AccounPatchService;
+import com.Lk.DigitalBank.Services.AccountService.AccountPatchService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AccountPatchController {
 
-    private final AccounPatchService accounPatchService;
+    private final AccountPatchService accounPatchService;
 
 
     // ALTERAR TYPE DA CONTA
