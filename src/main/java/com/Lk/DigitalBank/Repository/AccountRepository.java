@@ -40,11 +40,29 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     // BUSCAR POR NÚMERO DO CARTÃO DE CRÉDITO
     Optional<Account> findByCreditCardCardNumber(String cardNumber);
 
+    // VERIFICAR SE EXISTE CLIENTE COM TIPO DE CONTA JA EXISTENTES
+    Boolean existsByCustomerAndAccountType(Customer customer, AccountType accountType);
+
+
+    // BUSCAR CONTAS ATIVAS NO BANCO
+    @Query("""
+            SELECT a
+            FROM Account a
+            WHERE a.accountStatus = 'ACTIVE'
+            """)
+    List<Account> searchActives();
+
+    // BUSCAR CONTAS INATIVAS/BLOQUEADAS
+    @Query("""
+            SELECT a
+            FROm Account a
+            WHERE a.accountStatus = 'BLOCKED'
+            """)
+    List<Account> searchInactives();
+
     @Query(value = """
             SELECT nextval('entitys.account_number_seq')
             """, nativeQuery = true)
     Long nextAccountNumber();
 
-    // VERIFICAR SE EXISTE CLIENTE COM TIPO DE CONTA JA EXISTENTES
-    Boolean existsByCustomerAndAccountType(Customer customer, AccountType accountType);
 }
