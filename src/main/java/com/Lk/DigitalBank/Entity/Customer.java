@@ -1,5 +1,6 @@
 package com.Lk.DigitalBank.Entity;
 
+import com.Lk.DigitalBank.ENUM.CustomerStatus;
 import com.Lk.DigitalBank.Exception.InvalidCPFException;
 import com.Lk.DigitalBank.Exception.MinorClientException;
 import jakarta.persistence.*;
@@ -30,6 +31,10 @@ public class Customer {
     @Column(nullable = false, unique = true)
     private String cpf;
 
+    @Column()
+    @Enumerated(EnumType.STRING)
+    private CustomerStatus customerStatus;
+
     @Setter
     @Column(nullable = false)
     private LocalDate dateOfBirth;
@@ -46,6 +51,8 @@ public class Customer {
 
         verifyAge(dateOfBirth);
         this.dateOfBirth = dateOfBirth;
+
+        this.customerStatus = CustomerStatus.ACTIVE;
     }
 
     private void verifyAge(LocalDate date) {
@@ -88,5 +95,9 @@ public class Customer {
         if (accounts.remove(account)){
             account.removeCustomer();
         }
+    }
+
+    public void inactive(){
+        this.customerStatus = CustomerStatus.INACTIVE;
     }
 }
