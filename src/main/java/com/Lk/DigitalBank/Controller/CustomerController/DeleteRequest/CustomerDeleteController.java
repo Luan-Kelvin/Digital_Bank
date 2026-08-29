@@ -10,12 +10,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("customers")
+@RequestMapping("/customers")
 @RequiredArgsConstructor
 public class CustomerDeleteController {
     private final CustomerDeleteService customerDeleteService;
 
-    @DeleteMapping("/id/{id}")
+    @DeleteMapping("/delete/id/{id}")
     public ResponseEntity<Void> deleteCustomer(@PathVariable("id") Long id){
         customerDeleteService.deleteCustomner(id);
 
