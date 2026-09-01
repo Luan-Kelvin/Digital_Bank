@@ -45,6 +45,7 @@ public class CreditCard {
     private BigDecimal usedLimit = BigDecimal.ZERO;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private CardStatus cardStatus = CardStatus.ACTIVE;
 
     @Column(nullable = false)
