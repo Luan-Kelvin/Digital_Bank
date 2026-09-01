@@ -14,8 +14,8 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -39,6 +39,7 @@ public class AccountDeleteServiceTest {
         assertEquals(AccountStatus.BLOCKED, account.getAccountStatus());
 
         verify(accountRepository).findByAccountNumber(account.getAccountNumber());
+        verify(accountRepository).save(any(Account.class));
     }
 
     @Test
@@ -49,5 +50,6 @@ public class AccountDeleteServiceTest {
         assertThrows(AccountDoesNotExistException.class, () -> accountDeleteService.deleteAccount("12345"));
 
         verify(accountRepository).findByAccountNumber("12345");
+        verify(accountRepository, never()).save(any(Account.class));
     }
 }
