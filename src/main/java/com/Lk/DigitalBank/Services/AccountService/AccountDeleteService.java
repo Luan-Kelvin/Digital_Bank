@@ -6,11 +6,14 @@ import com.Lk.DigitalBank.Exception.AccountDoesNotExistException;
 import com.Lk.DigitalBank.Exception.AccountInactiveException;
 import com.Lk.DigitalBank.Repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class AccountDeleteService {
+    private final Logger logger = LoggerFactory.getLogger(AccountDeleteService.class);
     private final AccountRepository accountRepository;
 
     // DELETAR CONTA
@@ -23,5 +26,8 @@ public class AccountDeleteService {
         }
 
         account.blockedAccount();
+        accountRepository.save(account);
+        logger.info(String.format("Conta com Nº%s deletada com sucesso!", accountNumber));
+
     }
 }
