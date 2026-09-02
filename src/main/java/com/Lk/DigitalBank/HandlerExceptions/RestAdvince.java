@@ -306,4 +306,17 @@ public class RestAdvince {
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(erro);
     }
+
+    @ExceptionHandler(CreditCardDoesNotBlockedException.class)
+    public ResponseEntity<ErrorResponse> creditCardNotBlocked(CreditCardDoesNotBlockedException e, HttpServletRequest request){
+        ErrorResponse erro = new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.CONFLICT.value(),
+                "ERRO! cartão ativo",
+                e.getMessage(),
+                request.getRequestURI()
+        );
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(erro);
+    }
 }
