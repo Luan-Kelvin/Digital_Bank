@@ -6,6 +6,7 @@ import com.Lk.DigitalBank.ENUM.CardStatus;
 import com.Lk.DigitalBank.Entity.Account;
 import com.Lk.DigitalBank.Entity.CreditCard;
 import com.Lk.DigitalBank.Entity.Customer;
+import com.Lk.DigitalBank.Exception.CreditCardDoesNotBlockedException;
 import com.Lk.DigitalBank.Exception.InvalidCPFException;
 import com.Lk.DigitalBank.Exception.InvalidPasswordException;
 import com.Lk.DigitalBank.Repository.CreditCardRepository;
@@ -78,6 +79,76 @@ public class CreditCardPatchServiceTest {
         when(creditCardRepository.findByCardNumber(dto.number())).thenReturn(Optional.of(creditCard));
 
         assertThrows(InvalidPasswordException.class, () -> creditCardPatchService.blockCard(dto));
+
+        verify(creditCardRepository).findByCardNumber(dto.number());
+        verify(creditCardRepository, never()).save(any(CreditCard.class));
+    }
+
+    @Test
+    void deveMudarStatusDoCardParaActive(){
+        Customer customer = new Customer("Jandre", "123.456.789-10", LocalDate.of(1999, 2, 12));
+        Account account = new Account(customer, AccountType.CURRENT);
+        String number = "1234 5678 9101 1213";
+        CreditCard creditCard = new CreditCard("4555", number, account, 25);
+        creditCard.blockCard("4555");
+
+        CreditCardPatchBlockedDTO dto = new CreditCardPatchBlockedDTO(number, "123.456.789-10", "4555");
+
+        when(creditCardRepository.findByCardNumber(number)).thenReturn(Optional.of(creditCard));
+
+        creditCardPatchService.unlockCard(dto);
+
+        assertEquals(CardStatus.ACTIVE, creditCard.getCardStatus());
+
+        verify(creditCardRepository).findByCardNumber(number);
+        verify(creditCardRepository).save(any(CreditCard.class));
+    }
+
+    @Test
+    void deveLancarExcecaoSeCartaoEstiverAtivo(){
+        Customer customer = new Customer("Jandre", "545.789.888-25", LocalDate.of(1999, 2, 12));
+        Account account = new Account(customer, AccountType.CURRENT);
+        CreditCard creditCard = new CreditCard("4555", "5412 2587 7897 5454", account, 25);
+
+        CreditCardPatchBlockedDTO dto = new CreditCardPatchBlockedDTO("5412 2587 7897 5454", "123.456.789-10", "4555");
+
+        when(creditCardRepository.findByCardNumber(creditCard.getCardNumber())).thenReturn(Optional.of(creditCard));
+
+        assertThrows(CreditCardDoesNotBlockedException.class, () -> creditCardPatchService.unlockCard(dto));
+
+        verify(creditCardRepository).findByCardNumber(dto.number());
+        verify(creditCardRepository, never()).save(any(CreditCard.class));
+    }
+
+    @Test
+    void deveLancarExcecaoSeCPFForDIferenteNoDesboqueio(){
+        Customer customer = new Customer("Jandre", "545.789.888-25", LocalDate.of(1999, 2, 12));
+        Account account = new Account(customer, AccountType.CURRENT);
+        CreditCard creditCard = new CreditCard("4555", "5412 2587 7897 5454", account, 25);
+        creditCard.blockCard("4555");
+
+        CreditCardPatchBlockedDTO dto = new CreditCardPatchBlockedDTO("5412 2587 7897 5454", "123.456.789-10", "4555");
+
+        when(creditCardRepository.findByCardNumber(dto.number())).thenReturn(Optional.of(creditCard));
+
+        assertThrows(InvalidCPFException.class, () -> creditCardPatchService.unlockCard(dto));
+
+        verify(creditCardRepository).findByCardNumber(dto.number());
+        verify(creditCardRepository, never()).save(any(CreditCard.class));
+    }
+
+    @Test
+    void deveLancarExcecaoSeSenhaForDiferenteNoDesbloquei(){
+        Customer customer = new Customer("Jandre", "123.456.789-10", LocalDate.of(1999, 2, 12));
+        Account account = new Account(customer, AccountType.CURRENT);
+        CreditCard creditCard = new CreditCard("4555", "5412 2587 7897 5454", account, 25);
+        creditCard.blockCard("4555");
+
+        CreditCardPatchBlockedDTO dto = new CreditCardPatchBlockedDTO("5412 2587 7897 5454", "123.456.789-10", "4325");
+
+        when(creditCardRepository.findByCardNumber(dto.number())).thenReturn(Optional.of(creditCard));
+
+        assertThrows(InvalidPasswordException.class, () -> creditCardPatchService.unlockCard(dto));
 
         verify(creditCardRepository).findByCardNumber(dto.number());
         verify(creditCardRepository, never()).save(any(CreditCard.class));
