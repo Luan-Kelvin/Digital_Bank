@@ -23,8 +23,8 @@ public class CreditCardPatchService {
         CreditCard card = creditCardRepository.findByCardNumber(dto.number())
                 .orElseThrow(() -> new CreditCardsNotExistException(String.format("ERRO! Cartão com Nº não foi encontrado.", dto.number())));
 
-        if (dto.cpf().equals(card.getAccount().getCustomer().getCpf())){
-            throw new InvalidCPFException("ERRO! Cpf diferente do titular da conta.")
+        if (!dto.cpf().equals(card.getAccount().getCustomer().getCpf())){
+            throw new InvalidCPFException("ERRO! Cpf diferente do titular da conta.");
         }
 
         if (!dto.password().equals(card.getPassword())){
