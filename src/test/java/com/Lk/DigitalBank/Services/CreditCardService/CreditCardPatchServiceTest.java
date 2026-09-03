@@ -10,6 +10,7 @@ import com.Lk.DigitalBank.Exception.CreditCardDoesNotBlockedException;
 import com.Lk.DigitalBank.Exception.InvalidCPFException;
 import com.Lk.DigitalBank.Exception.InvalidPasswordException;
 import com.Lk.DigitalBank.Repository.CreditCardRepository;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -34,7 +35,8 @@ public class CreditCardPatchServiceTest {
     private CreditCardPatchService creditCardPatchService;
 
     @Test
-    void deveVerificarSeoStatusDoCartaoMudaParaBlocked(){
+    @DisplayName("Deve verificar se status de conta do cartão muda quando para blocked")
+    void mudandoStatusParaBlocked(){
         Customer customer = new Customer("Jandre", "123.456.789-10", LocalDate.of(1999, 2, 12));
         Account account = new Account(customer, AccountType.CURRENT);
         String number = "1234 5678 9101 1213";
@@ -53,7 +55,8 @@ public class CreditCardPatchServiceTest {
     }
 
     @Test
-    void deveLancarExcecaoSeCPFForDIferente(){
+    @DisplayName("Deve lançar exceção se CPF for diferente")
+    void lancaExcecaoSeCpfForDiferente(){
         Customer customer = new Customer("Jandre", "545.789.888-25", LocalDate.of(1999, 2, 12));
         Account account = new Account(customer, AccountType.CURRENT);
         CreditCard creditCard = new CreditCard("4555", "5412 2587 7897 5454", account, 25);
@@ -69,7 +72,8 @@ public class CreditCardPatchServiceTest {
     }
 
     @Test
-    void deveLancarExcecaoSeSenhaForDiferente(){
+    @DisplayName("Deve lançar exceção se senha for diferente")
+    void lancaExcecaoSeSenhaForDiferente(){
         Customer customer = new Customer("Jandre", "123.456.789-10", LocalDate.of(1999, 2, 12));
         Account account = new Account(customer, AccountType.CURRENT);
         CreditCard creditCard = new CreditCard("4555", "5412 2587 7897 5454", account, 25);
@@ -85,7 +89,8 @@ public class CreditCardPatchServiceTest {
     }
 
     @Test
-    void deveMudarStatusDoCardParaActive(){
+    @DisplayName("Deve mudar status do card para ctive")
+    void mudarStatusParaCAtive(){
         Customer customer = new Customer("Jandre", "123.456.789-10", LocalDate.of(1999, 2, 12));
         Account account = new Account(customer, AccountType.CURRENT);
         String number = "1234 5678 9101 1213";
@@ -105,7 +110,8 @@ public class CreditCardPatchServiceTest {
     }
 
     @Test
-    void deveLancarExcecaoSeCartaoEstiverAtivo(){
+    @DisplayName("Deve lançar exceção se cartão estiver ativo")
+    void lncaExcecaoSeCartaoEstiverAtivo(){
         Customer customer = new Customer("Jandre", "545.789.888-25", LocalDate.of(1999, 2, 12));
         Account account = new Account(customer, AccountType.CURRENT);
         CreditCard creditCard = new CreditCard("4555", "5412 2587 7897 5454", account, 25);
@@ -121,7 +127,8 @@ public class CreditCardPatchServiceTest {
     }
 
     @Test
-    void deveLancarExcecaoSeCPFForDIferenteNoDesboqueio(){
+    @DisplayName("Deve lançar exceção se CPF for diferente no desbloqueio")
+    void lancaExcecaoSeCpfForDiferenteNaHoraDeDesbloquear(){
         Customer customer = new Customer("Jandre", "545.789.888-25", LocalDate.of(1999, 2, 12));
         Account account = new Account(customer, AccountType.CURRENT);
         CreditCard creditCard = new CreditCard("4555", "5412 2587 7897 5454", account, 25);
@@ -138,7 +145,8 @@ public class CreditCardPatchServiceTest {
     }
 
     @Test
-    void deveLancarExcecaoSeSenhaForDiferenteNoDesbloquei(){
+    @DisplayName("Deve lançar exceção se senha for diferente no desbloqueio.")
+    void lancaExcecaoSeSenhaForDiferenteNoDesbloqueio(){
         Customer customer = new Customer("Jandre", "123.456.789-10", LocalDate.of(1999, 2, 12));
         Account account = new Account(customer, AccountType.CURRENT);
         CreditCard creditCard = new CreditCard("4555", "5412 2587 7897 5454", account, 25);

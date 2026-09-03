@@ -9,6 +9,7 @@ import com.Lk.DigitalBank.Exception.CustomerDoesNotExistException;
 import com.Lk.DigitalBank.Repository.AccountRepository;
 import com.Lk.DigitalBank.Repository.CustomerRepository;
 import com.Lk.DigitalBank.Services.AccountService.AccountPatchService;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -58,7 +59,8 @@ public class CustomerDeleteServiceTest {
     }
 
     @Test
-    public void develancarExcecaoSeClienteNaoExistir(){
+    @DisplayName("Deve lançar exceção se cliente não existir")
+    public void lancaExcecaoSeClienteNaoExistir(){
         Long id = 1L;
         Customer customer = new Customer();
 

@@ -4,6 +4,7 @@ import com.Lk.DigitalBank.ENUM.AccountStatus;
 import com.Lk.DigitalBank.Entity.Account;
 import com.Lk.DigitalBank.Exception.AccountDoesNotExistException;
 import com.Lk.DigitalBank.Repository.AccountRepository;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -28,7 +29,8 @@ public class AccountDeleteServiceTest {
     private AccountDeleteService accountDeleteService;
 
     @Test
-    public void deveMudarOStatusDaContaParaBlocked(){
+    @DisplayName("Deve mudar o status da conta para blocked")
+    public void bloquearAccount(){
         Account account = new Account();
         account.addNumberAccount("12345");
 
@@ -43,7 +45,8 @@ public class AccountDeleteServiceTest {
     }
 
     @Test
-    public void deveLancarExcecaoSeAccountnaoExistir(){
+    @DisplayName("Deve Lançar uma exceção se conta não existir.")
+    public void excecaoSeAccountNaoExistir(){
 
         when(accountRepository.findByAccountNumber("12345")).thenReturn(Optional.empty());
 

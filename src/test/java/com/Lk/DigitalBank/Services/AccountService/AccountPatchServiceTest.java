@@ -11,6 +11,7 @@ import com.Lk.DigitalBank.Entity.Customer;
 import com.Lk.DigitalBank.Exception.AccountDoesNotExistException;
 import com.Lk.DigitalBank.Exception.AccountInactiveException;
 import com.Lk.DigitalBank.Repository.AccountRepository;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -38,7 +39,8 @@ public class AccountPatchServiceTest {
     private AccountPatchService accounPatchService;
 
     @Test
-    public void deveAlterarTypeDaConta(){
+    @DisplayName("Deve alterar o Type da conta para o type que vem na dto.")
+    public void atualizarTypeDaConta(){
         Customer customer = new Customer();
         Account account = new Account(customer, AccountType.CURRENT);
         AccountGetDTO dto = new AccountGetDTO(1L, "12345", BigDecimal.valueOf(200.0), AccountType.SAVINGS, AccountStatus.ACTIVE, 1L, "Joaquim");
@@ -56,7 +58,8 @@ public class AccountPatchServiceTest {
     }
 
     @Test
-    public void deveMudarOStatusdDaContaParaBloqueado(){
+    @DisplayName("Deve alterar status da conta para bloqueado.")
+    public void mudarStatusParaBloqueado(){
         Account account = new Account();
 
         when(accountRepository.findById(1L)).thenReturn(Optional.of(account));
@@ -70,7 +73,8 @@ public class AccountPatchServiceTest {
     }
 
     @Test
-    public void deveLancarExcecaoSeContaNaoExistir(){
+    @DisplayName("Deve lançar exceção se conta não existir.")
+    public void lancaExcecaoSeContaNaoExistir(){
         Long id = 1L;
 
         when(accountRepository.findById(id)).thenReturn(Optional.empty());
@@ -82,7 +86,8 @@ public class AccountPatchServiceTest {
     }
 
     @Test
-    public void deveAlncarExcecaoSeContaEstiverInativa(){
+    @DisplayName("Deve lançar exceção se conta estiver inativa")
+    public void lancaExcecaoSeContaFroInativa(){
         Account account = new Account();
         account.blockedAccount();
 

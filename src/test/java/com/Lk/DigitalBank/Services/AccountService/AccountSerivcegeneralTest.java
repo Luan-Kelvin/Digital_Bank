@@ -9,6 +9,7 @@ import com.Lk.DigitalBank.Exception.AccountDoesNotExistException;
 import com.Lk.DigitalBank.Exception.AccountInactiveException;
 import com.Lk.DigitalBank.Repository.AccountRepository;
 import com.Lk.DigitalBank.Repository.TransactionRepository;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -134,7 +135,8 @@ public class AccountSerivcegeneralTest {
     }
 
     @Test
-    public void deveLancarExcecaoSeContaNaoExistirParaSaque(){
+    @DisplayName("Deve lançar exceção se conta não existir na hora do saque")
+    public void lancExcecaoSeContaNaoForEcontradaParaSaque(){
         String accounNumber = "12345";
 
         Account account = new Account();
@@ -153,7 +155,8 @@ public class AccountSerivcegeneralTest {
     }
 
     @Test
-    public void deveLancarExcecaoSeContaEstiverDesativadaParaSaque(){
+    @DisplayName("Deve lançar exceção se conta estiver desativada para saque")
+    public void lancaExcecaoSeContaEstiverDesativada(){
         Account account = new Account();
         account.addNumberAccount("12345");
         account.blockedAccount();

@@ -10,6 +10,7 @@ import com.Lk.DigitalBank.Exception.AccountAlreadyHasCreditCardException;
 import com.Lk.DigitalBank.Exception.AccountDoesNotExistException;
 import com.Lk.DigitalBank.Repository.AccountRepository;
 import com.Lk.DigitalBank.Repository.CreditCardRepository;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -91,7 +92,8 @@ public class CreditCardPostServiceTest {
     }
 
     @Test
-    void deveLancarExcecaoCasoContaJaTenhaCartaoDeCredito(){
+    @DisplayName("Deve lançar exceção se conta ja tver cartão de crédito")
+    void lancaExcecaoSeContaJaObtemCartaoDeCredito(){
         Account account= new Account();
         CreditCard creditCard = new CreditCard("4444", "2222 4444 8888 7777", account, 10);
         CreditCardPostDTO postDto = new CreditCardPostDTO("2547", 1L, 20);

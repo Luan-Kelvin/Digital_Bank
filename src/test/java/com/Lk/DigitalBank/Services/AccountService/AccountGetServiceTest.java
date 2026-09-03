@@ -10,6 +10,7 @@ import com.Lk.DigitalBank.Exception.AccountDoesNotExistException;
 import com.Lk.DigitalBank.Exception.AccountInactiveException;
 import com.Lk.DigitalBank.Exception.InvalidCPFException;
 import com.Lk.DigitalBank.Repository.AccountRepository;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -37,7 +38,8 @@ public class AccountGetServiceTest {
     private AccountGetService accountGetService;
 
     @Test
-    public void deveRetornarContaQuandoIdExistir(){
+    @DisplayName("Deve retornar conta de acordo com o id passado.")
+    public void retornarContaDoId(){
         Long id = 1L;
 
         Account account = new Account();
@@ -59,7 +61,8 @@ public class AccountGetServiceTest {
 
 
     @Test
-    public void deveLancarExceptionSeNaoExistir(){
+    @DisplayName("Deve lançar exceção se nao existir conta com o id solicitado.")
+    public void lancarExcecaoSeNaoExistir(){
         Long id = 99L;
 
         when(accountRepository.findById(id)).thenReturn(Optional.empty());
@@ -70,7 +73,8 @@ public class AccountGetServiceTest {
     }
 
     @Test
-    public void deveRetornarSaldo(){
+    @DisplayName("Deve retornar o saldo da conta")
+    public void retornarSaldo(){
         Account account = new Account();
         account.addNumberAccount("12345");
         account.deposit(BigDecimal.valueOf(200));
@@ -86,7 +90,8 @@ public class AccountGetServiceTest {
     }
 
     @Test
-    public void deveLancarExcecaoSeContaNaoExistirParaConsultaDeSaldo(){
+    @DisplayName("Deve lançar exceção se conta conta não existir")
+    public void lancaExcecaoSeContaNaoExiste(){
         Account account = new Account();
         account.addNumberAccount("12345");
 
@@ -98,7 +103,8 @@ public class AccountGetServiceTest {
     }
 
     @Test
-    public void deveLancarExcecaoSeContaEstiverInativaParaConsultaDeSaldo(){
+    @DisplayName("Deve lançar exceção se conta nao estiver ativa na hora da consulta de saldo.")
+    public void lancaExcecaoParaContaInativa(){
         Account account = new Account();
         account.addNumberAccount("12345");
         account.blockedAccount();
@@ -112,7 +118,8 @@ public class AccountGetServiceTest {
 
 
     @Test
-    public void deveRetornarContaCOmNumeroSolicitado(){
+    @DisplayName("Deve retornar a conta que tem o número solicitado")
+    public void retornarContaQueTemNumerSolicitado(){
         String number = "12345";
 
         Account account = new Account();
@@ -133,7 +140,8 @@ public class AccountGetServiceTest {
     }
 
     @Test
-    public void lancarExcpetionSeContaNaoExistir(){
+    @DisplayName("Lançar exceção se conta não existir")
+    public void lancaExcecaoSeNaoContaNoaExisteNoBanco(){
         String number = "54321";
 
         when(accountRepository.findByAccountNumber(number)).thenReturn(Optional.empty());
@@ -145,7 +153,8 @@ public class AccountGetServiceTest {
 
 
     @Test
-    public void deveRealizarBuscaPorCPFDeCliente(){
+    @DisplayName("Deve realizar busca por cpf do cliente")
+    public void buscarClienteDOCPF(){
         Account account = new Account();
 
         AccountGetDTO dto1 = new AccountGetDTO(1L, "12345", BigDecimal.ZERO, AccountType.CURRENT, AccountStatus.ACTIVE, 1L, "teste");
@@ -168,7 +177,8 @@ public class AccountGetServiceTest {
     }
 
     @Test
-    public void develancarExcecaoSeCPFForInvalido(){
+    @DisplayName("Deve lancar Exceção se cpf for inválido.")
+    public void lancaExcecaoSeCPFForInvalidoo(){
         String cpf = "12345678922";
 
         assertThrows(InvalidCPFException.class, () -> accountGetService.searchByCustomer(cpf));;
@@ -177,7 +187,8 @@ public class AccountGetServiceTest {
     }
 
     @Test
-    public void deveRetornarListaVaziaQuandoClienteNaoPossuiContas(){
+    @DisplayName("Deve retornar lista vazia se o cliente nao possui contas.")
+    public void retrnarListaVaziaParaClientesSemCOntas(){
         String cpf = "123.456.789-22";
 
         when(accountRepository.findByCustomerCpf(cpf)).thenReturn(List.of());

@@ -7,6 +7,7 @@ import com.Lk.DigitalBank.ENUM.CustomerStatus;
 import com.Lk.DigitalBank.Entity.Customer;
 import com.Lk.DigitalBank.Exception.CustomerAlreadyExistsException;
 import com.Lk.DigitalBank.Repository.CustomerRepository;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -34,7 +35,8 @@ public class CustomerPostServiceTest {
     private CustomerPostService customerPostService;
 
     @Test
-    public void deveCriarNovoCustomerERetornarCustomerGetDTO(){
+    @DisplayName("Deve criar novo cliente e retorna-lo como dto")
+    public void criarNovoCliente(){
         Customer customer = new Customer("Joaquim", "555.424.825-22", LocalDate.of(2002, 2, 12));
         CustomerGetDTO customerGetDTO = new CustomerGetDTO(1L, "Joaquim", LocalDate.of(2002, 2, 12 ), CustomerStatus.INACTIVE, List.of());
         CustomerPostDTO postDto = new CustomerPostDTO("Joaquim", "555.424.825-22", LocalDate.of(2002, 2, 12));
@@ -63,7 +65,8 @@ public class CustomerPostServiceTest {
     }
 
     @Test
-    public void deveLancarExcecaoSeCustomerJaExistir(){
+    @DisplayName("Deve lançar exceção se cliente ja existir")
+    public void lancarExcecaoSeClienteExistir(){
         String cpf = "123.456.789.10";
         CustomerPostDTO postDto = new CustomerPostDTO("Joaquim", cpf, LocalDate.of(2002, 3, 14));
 

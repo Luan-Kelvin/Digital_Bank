@@ -13,6 +13,7 @@ import com.Lk.DigitalBank.Exception.CustomerDoesNotExistException;
 import com.Lk.DigitalBank.Repository.AccountRepository;
 import com.Lk.DigitalBank.Repository.CustomerRepository;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -49,7 +50,8 @@ public class AccountPostServiceTest {
     private  AccountPostService accountPostService;
 
     @Test
-    public void deveretornarUmaNovaContaCriada(){
+    @DisplayName("Deve retornar uma nova conta criada.")
+    public void criarNovaConta(){
         String cpf = "111.222.333-44";
 
         Account account = new Account();
@@ -89,7 +91,8 @@ public class AccountPostServiceTest {
     }
 
     @Test
-    public void deveretornarExceptionSeCustomernaoExistir(){
+    @DisplayName("Deve retornar exception se cliente não existir")
+    public void lancaExceptionSeClienteNaoForEncontrado(){
         String cpf = "225.456.787-54";
         AccountPostDTO postDto = new AccountPostDTO(cpf, AccountType.CURRENT);
 
@@ -103,7 +106,8 @@ public class AccountPostServiceTest {
     }
 
     @Test
-    public void deveLancarExcecaoSeJaExistirUmaContaComMesmoTypeEMesmoCliente(){
+    @DisplayName("Deve lançar exceção se ja existir conta com mesmo type e mesmo cliente")
+    public void deveLancarExcecaoSeContaJaForCriadas(){
         String cpf = "544.787.478-26";
         Customer customer = new Customer("Laun Rocha", cpf, LocalDate.of(2002, 12, 21));
 

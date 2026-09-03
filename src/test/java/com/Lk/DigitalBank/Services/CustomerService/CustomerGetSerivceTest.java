@@ -6,6 +6,7 @@ import com.Lk.DigitalBank.ENUM.CustomerStatus;
 import com.Lk.DigitalBank.Entity.Customer;
 import com.Lk.DigitalBank.Exception.CustomerDoesNotExistException;
 import com.Lk.DigitalBank.Repository.CustomerRepository;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -33,7 +34,8 @@ public class CustomerGetSerivceTest {
     private CustomerGetService customerGetService;
 
     @Test
-    public void deveRetornarListaDeClientesAtivos(){
+    @DisplayName("Deve retornar lista de clientes ativos")
+    public void listarClientesAtivos(){
         Customer customer = new Customer();
         List<Customer> list = List.of(customer);
         CustomerGetDTO customerGetDTO = new CustomerGetDTO(1L, "Joaquim", LocalDate.of(2002, 2, 19), CustomerStatus.ACTIVE, List.of());
@@ -50,7 +52,8 @@ public class CustomerGetSerivceTest {
     }
 
     @Test
-    public void deveRetornarListaDeClientesInativos(){
+    @DisplayName("Deve retornar lista de cientes inativos")
+    public void listarClientesInativos(){
         Customer customer = new Customer();
         List<Customer> list = List.of(customer);
         CustomerGetDTO customerGetDTO = new CustomerGetDTO(1L, "Joaquim", LocalDate.of(2002, 2, 19), CustomerStatus.INACTIVE, List.of());
@@ -67,7 +70,8 @@ public class CustomerGetSerivceTest {
     }
 
     @Test
-    public void deveRetornarListaVaziaSeNaoTiverClientesAtivosCadastrados(){
+    @DisplayName("Deve retornar lista vazia se nao tiver clientes ativos")
+    public void retornarListaVaziaDeClientesAtivos(){
         when(customerRepository.searchActives()).thenReturn(List.of());
 
         List<CustomerGetDTO> list = customerGetService.listCustomerActives();
@@ -79,7 +83,8 @@ public class CustomerGetSerivceTest {
     }
 
     @Test
-    public void deveRetornarListaVaziaSeNaoTiverClientesInativoCadastrados(){
+    @DisplayName("Deve retornar lista vazia se nao tiver clientes inativos")
+    public void retornarListaVaziaDeClientesInativos(){
         when(customerRepository.searchInactives()).thenReturn(List.of());
 
         List<CustomerGetDTO> list = customerGetService.listCustomerInactives();
@@ -91,7 +96,8 @@ public class CustomerGetSerivceTest {
     }
 
     @Test
-    public void deveRetornarOClienteQueTenhaOIdSolicitado(){
+    @DisplayName("Deve retornar cliente cujo id seja igual ao solicitado")
+    public void retornarClienteComIdSolicitado(){
         Customer customer = new Customer("Joaquim", "123.456.789-10", LocalDate.of(2004, 3, 12));
         CustomerGetDTO customerGetDTO = new CustomerGetDTO(1L, "Joaquim", LocalDate.of(2002, 2, 19), CustomerStatus.INACTIVE, List.of());
 
@@ -107,7 +113,8 @@ public class CustomerGetSerivceTest {
     }
 
     @Test
-    public void develancarExecaoSeClienteNaoExistirNaBuscaPorId(){
+    @DisplayName("Deve lançar exceção se cliente não existir na busca por id")
+    public void lancarExcecaoSeClienteNaoExistir(){
         Long id = 1L;
 
         when(customerRepository.findById(id)).thenReturn(Optional.empty());
@@ -120,7 +127,8 @@ public class CustomerGetSerivceTest {
 
 
     @Test
-    public void deveRetornarClienteComCpfIgualDaBusca(){
+    @DisplayName("Deve retornar cliente com CPF igual ao solicitado")
+    public void retornarClienteComCpfSolicitado(){
         String cpf = "123.456.789-10";
         Customer customer = new Customer("Joaquim", cpf,  LocalDate.of(2004, 3, 12));
         CustomerGetDTO customerGetDTO = new CustomerGetDTO(1L, "Joaquim", LocalDate.of(2002, 2, 19), CustomerStatus.INACTIVE, List.of());
@@ -139,7 +147,8 @@ public class CustomerGetSerivceTest {
     }
 
     @Test
-    public void deveLancarExcecaoSeClienteNoaExistirNaBuscaPorCPF(){
+    @DisplayName("Deve lançar exceção se nao tiver nenhum cliente com o cpf solicitado")
+    public void lancarExcecaoSeClienteComCpfSolicitadoNaoExistir(){
         String cpf = "123.456.789-10";
 
         when(customerRepository.findByCpf(cpf)).thenReturn(Optional.empty());
