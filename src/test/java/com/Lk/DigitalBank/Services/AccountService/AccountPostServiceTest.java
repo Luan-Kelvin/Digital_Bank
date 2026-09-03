@@ -16,6 +16,7 @@ import com.Lk.DigitalBank.Repository.CustomerRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -62,6 +63,15 @@ public class AccountPostServiceTest {
         when(conversor.converterAccount(any(Account.class))).thenReturn(getDto);
 
         AccountGetDTO accountGetDTO = accountPostService.createAccount(postDto);
+
+        ArgumentCaptor<Account> captor = ArgumentCaptor.forClass(Account.class);
+
+        verify(accountRepository).save(captor.capture());
+
+        Account accountSave = captor.getValue();
+
+        assertEquals(postDto.cpfCustomer(), accountSave.getCustomer().getCpf());
+        assertEquals(postDto.accountType(), accountSave.getAccountType());
 
         assertEquals(customer.getName(), accountGetDTO.customerName());
         assertEquals("12345", getDto.accountNumber());
