@@ -9,6 +9,7 @@ import com.Lk.DigitalBank.Exception.CustomerAlreadyExistsException;
 import com.Lk.DigitalBank.Repository.CustomerRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -42,6 +43,16 @@ public class CustomerPostServiceTest {
         when(conversor.converterCustomer(customer)).thenReturn(customerGetDTO);
 
         CustomerGetDTO resultado = customerPostService.createCustomer(postDto);
+
+        ArgumentCaptor<Customer> captor = ArgumentCaptor.forClass(Customer.class);
+
+        verify(customerRepository).save(captor.capture());
+
+        Customer customer1Save = captor.getValue();
+
+        assertEquals(postDto.name(), customer1Save.getName());
+        assertEquals(postDto.cpf(), customer1Save.getCpf());
+        assertEquals(postDto.dateOfBirth(), customer1Save.getDateOfBirth());
 
         assertEquals(postDto.name(), resultado.name());
         assertEquals(postDto.dateOfBirth(), resultado.dateOfBirth());
