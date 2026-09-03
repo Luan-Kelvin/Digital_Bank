@@ -15,8 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
 @RequiredArgsConstructor
 public class CreditCardPostService {
@@ -47,6 +45,5 @@ public class CreditCardPostService {
         creditCardRepository.save(creditCard);
 
         return conversor.converterCreditCard(creditCard);
-
     }
 }
