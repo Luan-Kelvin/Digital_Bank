@@ -10,16 +10,25 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("card/")
+@RequestMapping("/card")
 @RequiredArgsConstructor
 public class CreditCardPatchController {
 
     private final CreditCardPatchService creditCardPatchService;
 
     // BLOQUEAR CARTÃO
-    @PatchMapping("bloquear/")
+    @PatchMapping("/bloquear")
     public ResponseEntity<Void> blockCard(@RequestBody CreditCardPatchBlockedDTO dto){
         creditCardPatchService.blockCard(dto);
         return ResponseEntity.noContent().build();
     }
+
+    // DESBLOQUEAR CARTÃO
+    @PatchMapping("/desbloquear")
+    public ResponseEntity<Void> cunlockCard(@RequestBody CreditCardPatchBlockedDTO dto){
+        creditCardPatchService.unlockCard(dto);
+        return ResponseEntity.noContent().build();
+    }
+
+
 }
