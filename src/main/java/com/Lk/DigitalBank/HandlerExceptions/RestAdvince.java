@@ -319,4 +319,17 @@ public class RestAdvince {
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(erro);
     }
+
+    @ExceptionHandler(InactiveCreditCardException.class)
+    public ResponseEntity<ErrorResponse> cardInactive(InactiveCreditCardException e, HttpServletRequest request){
+        ErrorResponse error = new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.CONFLICT.value(),
+                "cartão de crédito inativo para uso",
+                e.getMessage(),
+                request.getRequestURI()
+        );
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+    }
 }
