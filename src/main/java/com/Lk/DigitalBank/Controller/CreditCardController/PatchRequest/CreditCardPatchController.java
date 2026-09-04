@@ -1,6 +1,7 @@
 package com.Lk.DigitalBank.Controller.CreditCardController.PatchRequest;
 
 import com.Lk.DigitalBank.DTOs.CreditCard.CreditCardPatch.CreditCardPatchBlockedDTO;
+import com.Lk.DigitalBank.DTOs.CreditCard.CreditCardPatch.UpdatePasswordDTO;
 import com.Lk.DigitalBank.Services.CreditCardService.CreditCardPatchService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -30,5 +31,11 @@ public class CreditCardPatchController {
         return ResponseEntity.noContent().build();
     }
 
+    // ALTERAR SENHA DO CARTÃO
+    @PatchMapping("/alterar/senha")
+    public ResponseEntity<String> updatePassword(@RequestBody UpdatePasswordDTO dto){
+        creditCardPatchService.updatePassword(dto);
 
+        return ResponseEntity.ok().body("Senha alterada com sucesso!");
+    }
 }
