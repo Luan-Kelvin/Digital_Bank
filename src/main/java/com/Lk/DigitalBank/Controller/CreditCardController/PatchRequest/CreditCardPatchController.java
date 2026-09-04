@@ -1,9 +1,12 @@
 package com.Lk.DigitalBank.Controller.CreditCardController.PatchRequest;
 
+import com.Lk.DigitalBank.DTOs.CreditCard.CreditCardGetDTO;
 import com.Lk.DigitalBank.DTOs.CreditCard.CreditCardPatch.CreditCardPatchBlockedDTO;
+import com.Lk.DigitalBank.DTOs.CreditCard.CreditCardPatch.CreditCardPatchLimitDTO;
 import com.Lk.DigitalBank.DTOs.CreditCard.CreditCardPatch.UpdatePasswordDTO;
 import com.Lk.DigitalBank.Services.CreditCardService.CreditCardPatchService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -37,5 +40,11 @@ public class CreditCardPatchController {
         creditCardPatchService.updatePassword(dto);
 
         return ResponseEntity.ok().body("Senha alterada com sucesso!");
+    }
+
+    // AUMENTAR LIMITE
+    @PatchMapping("/aumentar/limite")
+    public ResponseEntity<CreditCardGetDTO> increaseLimit(@RequestBody CreditCardPatchLimitDTO dto){
+        return ResponseEntity.status(HttpStatus.OK).body(creditCardPatchService.increaseLimit(dto));
     }
 }
