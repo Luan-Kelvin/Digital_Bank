@@ -1,7 +1,9 @@
 package com.Lk.DigitalBank.Services.CreditCardService;
 
+import com.Lk.DigitalBank.Conversores.Conversor;
 import com.Lk.DigitalBank.DTOs.CreditCard.CreditCardGetDTO;
 import com.Lk.DigitalBank.DTOs.CreditCard.CreditCardPatch.CreditCardPatchBlockedDTO;
+import com.Lk.DigitalBank.DTOs.CreditCard.CreditCardPatch.CreditCardPatchLimitDTO;
 import com.Lk.DigitalBank.DTOs.CreditCard.CreditCardPatch.UpdatePasswordDTO;
 import com.Lk.DigitalBank.ENUM.CardStatus;
 import com.Lk.DigitalBank.Entity.CreditCard;
@@ -13,10 +15,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+
 @Service
 @RequiredArgsConstructor
 public class CreditCardPatchService {
     private final Logger logger = LoggerFactory.getLogger(CreditCardPatchService.class);
+    private final Conversor conversor;
     private final CreditCardRepository creditCardRepository;
 
     // BLOQUEAR CARTÃO DE CRÉDITO
@@ -88,6 +93,25 @@ public class CreditCardPatchService {
         creditCardRepository.save(card);
         logger.info(String.format("Senha do cartão Nº %s alterada com sucesso!", dto.cardNumber()));
 
+    }
+
+    // AUMENTAR LIMITE
+    @Transactional
+    public CreditCardGetDTO increaseLimit(CreditCardPatchLimitDTO dto){
+        CreditCard card = creditCardRepository.findByCardNumber(dto.cardNumber())
+                .orElseThrow(() -> new CreditCardsNotExistException(String.format("Cartão com Nº %s não existe.", dto.cardNumber())));
+
+        if (card.getCardStatus() != CardStatus.ACTIVE){
+            throw new InactiveCreditCardException("ERRO! Cartão de crédito esta inativo.");
+        }
+
+        BigDecimal oldLimit = card.getCreditLimit();
+
+        card.increaseLimit(dto.valueIncrease());
+        creditCardRepository.save(card);
+        logger.info(String.format("Limite do cartão Nº %s aumentado, ANTES: R$%s, AGORA: R$%s", dto.cardNumber(), oldLimit, card.getCreditLimit()));
+
+        return conversor.converterCreditCard(card);
     }
 
 
