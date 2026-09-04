@@ -1,12 +1,11 @@
 package com.Lk.DigitalBank.Services.CreditCardService;
 
+import com.Lk.DigitalBank.DTOs.CreditCard.CreditCardGetDTO;
 import com.Lk.DigitalBank.DTOs.CreditCard.CreditCardPatch.CreditCardPatchBlockedDTO;
+import com.Lk.DigitalBank.DTOs.CreditCard.CreditCardPatch.UpdatePasswordDTO;
 import com.Lk.DigitalBank.ENUM.CardStatus;
 import com.Lk.DigitalBank.Entity.CreditCard;
-import com.Lk.DigitalBank.Exception.CreditCardDoesNotBlockedException;
-import com.Lk.DigitalBank.Exception.CreditCardsNotExistException;
-import com.Lk.DigitalBank.Exception.InvalidCPFException;
-import com.Lk.DigitalBank.Exception.InvalidPasswordException;
+import com.Lk.DigitalBank.Exception.*;
 import com.Lk.DigitalBank.Repository.CreditCardRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +24,10 @@ public class CreditCardPatchService {
     public void blockCard(CreditCardPatchBlockedDTO dto){
         CreditCard card = creditCardRepository.findByCardNumber(dto.number())
                 .orElseThrow(() -> new CreditCardsNotExistException(String.format("ERRO! Cartão com Nº não foi encontrado.", dto.number())));
+
+        if (card.getCardStatus() != CardStatus.ACTIVE){
+            throw new InactiveCreditCardException("ERRO! Cartão de crédito está inativo.");
+        }
 
         if (!dto.cpf().equals(card.getAccount().getCustomer().getCpf())){
             throw new InvalidCPFException("ERRO! Cpf diferente do titular da conta.");
@@ -60,6 +63,30 @@ public class CreditCardPatchService {
         card.unlockCard(dto.password());
         creditCardRepository.save(card);
         logger.info(String.format("Cartão Nº%s desbloqueado com sucesso!", dto.number()));
+
+    }
+
+    // ALTERAR SENHA DO CARTÃO
+    @Transactional
+    public void updatePassword(UpdatePasswordDTO dto){
+        CreditCard card = creditCardRepository.findByCardNumber(dto.cardNumber())
+                .orElseThrow(() ->  new CreditCardsNotExistException(String.format("ERO! cartão de crédito com Nº n%s não existe.", dto.cardNumber())));
+
+        if (card.getCardStatus() != CardStatus.ACTIVE){
+            throw new InactiveCreditCardException("ERRO! Cartão de crédito está inativo.");
+        }
+
+        if (!dto.cpf().equals(card.getAccount().getCustomer().getCpf())){
+            throw new InvalidCPFException("ERRO! Cpf diferente do titular da conta.");
+        }
+
+        if (!dto.oldPassword().equals(card.getPassword())){
+            throw new InvalidPasswordException("ERRO! senha incorreta.");
+        }
+
+        card.changePassword(dto.newPassword());
+        creditCardRepository.save(card);
+        logger.info(String.format("Senha do cartão Nº %s alterada com sucesso!", dto.cardNumber()));
 
     }
 
