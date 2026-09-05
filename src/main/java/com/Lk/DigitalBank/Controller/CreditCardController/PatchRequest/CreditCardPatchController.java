@@ -1,10 +1,12 @@
 package com.Lk.DigitalBank.Controller.CreditCardController.PatchRequest;
 
 import com.Lk.DigitalBank.DTOs.CreditCard.CreditCardGetDTO;
+import com.Lk.DigitalBank.DTOs.CreditCard.CreditCardPatch.ChangeClosingInvoicePatchDTO;
 import com.Lk.DigitalBank.DTOs.CreditCard.CreditCardPatch.CreditCardPatchBlockedDTO;
 import com.Lk.DigitalBank.DTOs.CreditCard.CreditCardPatch.CreditCardPatchLimitDTO;
 import com.Lk.DigitalBank.DTOs.CreditCard.CreditCardPatch.UpdatePasswordDTO;
 import com.Lk.DigitalBank.Services.CreditCardService.CreditCardPatchService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -52,5 +54,11 @@ public class CreditCardPatchController {
     @PatchMapping("diminuir/limite")
     public ResponseEntity<CreditCardGetDTO> reduceLimit(@RequestBody CreditCardPatchLimitDTO dto){
         return ResponseEntity.ok().body(creditCardPatchService.reduceLimit(dto));
+    }
+
+    // ALTERAR DATA DE FECHAMENTO DA FATURA
+    @PatchMapping("alterar/fechamento")
+    public ResponseEntity<String> changeInvoiceClosing(@Valid @RequestBody ChangeClosingInvoicePatchDTO dto){
+        return ResponseEntity.ok().body("Data de fechamento alterado com sucesso!");
     }
 }
