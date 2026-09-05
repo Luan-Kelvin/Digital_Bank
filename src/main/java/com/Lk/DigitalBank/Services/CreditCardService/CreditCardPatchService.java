@@ -114,5 +114,23 @@ public class CreditCardPatchService {
         return conversor.converterCreditCard(card);
     }
 
+    // REDUZIR LIMITE
+    public CreditCardGetDTO reduceLimit(CreditCardPatchLimitDTO dto){
+        CreditCard card = creditCardRepository.findByCardNumber(dto.cardNumber())
+                .orElseThrow(() -> new CreditCardsNotExistException(String.format("ERRO! cartão com Nº %s não existe.", dto.cardNumber())));
+
+        if (card.getCardStatus() != CardStatus.ACTIVE){
+            throw new InactiveCreditCardException("ERRO! Cartão de crédito esta inativo.");
+        }
+
+        BigDecimal oldLimit = card.getCreditLimit();
+
+        card.lowerLimit(dto.valueIncrease());
+        creditCardRepository.save(card);
+        logger.info(String.format("Limite do cartão Nº %s reduzido com sucessor, ANTES: R$ %s | DEPOIS: RS %s", dto.cardNumber(), oldLimit, card.getCreditLimit()));
+
+        return conversor.converterCreditCard(card);
+    }
+
 
 }
