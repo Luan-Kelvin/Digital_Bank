@@ -2,6 +2,7 @@ package com.Lk.DigitalBank.Services.CreditCardService;
 
 import com.Lk.DigitalBank.Conversores.Conversor;
 import com.Lk.DigitalBank.DTOs.CreditCard.CreditCardGetDTO;
+import com.Lk.DigitalBank.DTOs.CreditCard.CreditCardPatch.ChangeClosingInvoicePatchDTO;
 import com.Lk.DigitalBank.DTOs.CreditCard.CreditCardPatch.CreditCardPatchBlockedDTO;
 import com.Lk.DigitalBank.DTOs.CreditCard.CreditCardPatch.CreditCardPatchLimitDTO;
 import com.Lk.DigitalBank.DTOs.CreditCard.CreditCardPatch.UpdatePasswordDTO;
@@ -130,6 +131,22 @@ public class CreditCardPatchService {
         logger.info(String.format("Limite do cartão Nº %s reduzido com sucessor, ANTES: R$ %s | DEPOIS: RS %s", dto.cardNumber(), oldLimit, card.getCreditLimit()));
 
         return conversor.converterCreditCard(card);
+    }
+
+    // ALTERAR FECHAMENTO DA FATURA
+    public void changeInvoiceClosing(ChangeClosingInvoicePatchDTO dto){
+        CreditCard card = creditCardRepository.findByCardNumber(dto.cardNumber())
+                .orElseThrow(() -> new CreditCardsNotExistException(String.format("Cartão com Nº %s não existe.", dto.cardNumber())));
+
+        if (card.getCardStatus() != CardStatus.ACTIVE){
+            throw new InactiveCreditCardException("ERRO! Cartão não está ativo para uso.");
+        }
+
+        Integer oldDay = card.getClosingDayInvoice();
+
+        card.changeBillingClosingDay(dto.newDay());
+        creditCardRepository.save(card);
+        logger.info(String.format("Dia de fechamento de fatura do cartão Nº %s alterado com sucesso! ANTES: %s | DEPOIS: %s ", dto.cardNumber(), oldDay, dto.newDay()));
     }
 
 
