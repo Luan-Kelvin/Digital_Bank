@@ -62,7 +62,8 @@ public class ReduceLimitTest {
         CreditCard cardSave = captor.getValue();
 
         assertEquals(BigDecimal.valueOf(180), cardSave.getCreditLimit());
-        assertEquals(cardSave.getId(), getDto.id());
+        assertEquals(getDto.id(), cardSave.getId());
+        assertEquals(getDto, resultado);
 
         verify(creditCardRepository).findByCardNumber(card.getCardNumber());
         verify(conversor).converterCreditCard(card);
