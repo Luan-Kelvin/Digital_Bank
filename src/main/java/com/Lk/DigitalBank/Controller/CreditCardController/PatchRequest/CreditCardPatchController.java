@@ -47,4 +47,10 @@ public class CreditCardPatchController {
     public ResponseEntity<CreditCardGetDTO> increaseLimit(@RequestBody CreditCardPatchLimitDTO dto){
         return ResponseEntity.status(HttpStatus.OK).body(creditCardPatchService.increaseLimit(dto));
     }
+
+    // REDUZIR LIMITE
+    @PatchMapping("diminuir/limite")
+    public ResponseEntity<CreditCardGetDTO> reduceLimit(@RequestBody CreditCardPatchLimitDTO dto){
+        return ResponseEntity.ok().body(creditCardPatchService.reduceLimit(dto));
+    }
 }
