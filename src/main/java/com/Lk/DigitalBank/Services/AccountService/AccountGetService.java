@@ -106,7 +106,7 @@ public class AccountGetService {
         List<Account> accounts = accountRepository.findByAccountStatus(st);
 
         if (accounts.isEmpty()){
-            System.out.println(String.format("Nenhuma Conta cadastrada com status %s", status.toUpperCase()));
+            logger.info(String.format("Nenhuma Conta cadastrada com status %s", status.toUpperCase()));
             return List.of();
         }
 
@@ -127,6 +127,11 @@ public class AccountGetService {
 
         List<Account> accounts = accountRepository.findByAccountType(ty);
 
+        if (accounts.isEmpty()){
+            logger.info(String.format("ERRO!não foi encontrado nenhum conta do tipo %s.", ty));
+            return List.of();
+        }
+
         return accounts.stream().map(conversor::converterAccount).toList();
     }
 
@@ -141,6 +146,7 @@ public class AccountGetService {
 
         if (accounts.isEmpty()){
             logger.info(String.format("Cliente com cpf %s... não possui nenhuma conta.", cpf.substring(0, 7)));
+            return List.of();
         }
 
         return accounts.stream().map(conversor::converterAccount).toList();
