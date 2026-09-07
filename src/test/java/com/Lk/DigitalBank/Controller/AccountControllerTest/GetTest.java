@@ -6,6 +6,7 @@ import com.Lk.DigitalBank.DTOs.Account.AccountGetDTO;
 import com.Lk.DigitalBank.Exception.AccountDoesNotExistException;
 import com.Lk.DigitalBank.Exception.AccountInactiveException;
 import com.Lk.DigitalBank.Exception.InvalidAccountStatusException;
+import com.Lk.DigitalBank.Exception.InvalidAccountTypeException;
 import com.Lk.DigitalBank.Services.AccountService.AccountGetService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -167,6 +168,28 @@ public class GetTest {
         mvc.perform(get("/accounts/status/status")).andExpect(status().isConflict());
 
         verify(accountGetService).searchByStatus("status");
+    }
+
+    @Test
+    @DisplayName("Deve retornar Statuys 200 - OK quando encontrar a lista com Type passado pelo endpoint")
+    void deveRetornarStatus200SeListaComTypeForEcontrada() throws Exception {
+        List<AccountGetDTO> list = new ArrayList<>();
+        when(accountGetService.searchByType("type")).thenReturn(list);
+
+        mvc.perform(get("/accounts/type/type")).andExpect(status().isOk());
+
+        verify(accountGetService).searchByType("type");
+    }
+
+    @Test
+    @DisplayName("Deve retornar Status 409 - CONFLICT se type passado pelo endpoint for inválido")
+    void deveRetornarStatus409SeTypeForInvalido() throws Exception {
+        doThrow(new InvalidAccountTypeException("ERRO! Type de conta passado por parâmetro não existe."))
+                .when(accountGetService).searchByType("type");
+
+        mvc.perform(get("/accounts/type/type")).andExpect(status().isConflict());
+
+        verify(accountGetService).searchByType("type");
     }
 
 
