@@ -5,6 +5,7 @@ import com.Lk.DigitalBank.DTOs.Account.AccountBalanceDTO;
 import com.Lk.DigitalBank.DTOs.Account.AccountGetDTO;
 import com.Lk.DigitalBank.Exception.AccountDoesNotExistException;
 import com.Lk.DigitalBank.Exception.AccountInactiveException;
+import com.Lk.DigitalBank.Exception.InvalidAccountStatusException;
 import com.Lk.DigitalBank.Services.AccountService.AccountGetService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -144,6 +145,28 @@ public class GetTest {
         mvc.perform(get("/accounts/number/12345")).andExpect(status().isConflict());
 
         verify(accountGetService).findByAccountNumber("12345");
+    }
+
+    @Test
+    @DisplayName("Deve retornar status 200 - OK quando encontrar a lista de contas com status solicitado.")
+    void deveRetronarListaDeContasComStatusSolicitado() throws Exception {
+        List<AccountGetDTO> list = new ArrayList<>();
+        when(accountGetService.searchByStatus("status")).thenReturn(list);
+
+        mvc.perform(get("/accounts/status/status")).andExpect(status().isOk());
+
+        verify(accountGetService).searchByStatus("status");
+    }
+
+    @Test
+    @DisplayName("Deve retornar Status 409 - CONFLICT se o status passado for inválido")
+    void deveRetornarStatus409SeStatusPassadoNoEndpointForInvalido() throws Exception {
+        doThrow(new InvalidAccountStatusException("ERRO! Status passado é inválido."))
+                .when(accountGetService).searchByStatus("status");
+
+        mvc.perform(get("/accounts/status/status")).andExpect(status().isConflict());
+
+        verify(accountGetService).searchByStatus("status");
     }
 
 
