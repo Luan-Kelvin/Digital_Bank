@@ -21,20 +21,22 @@ public class AccountGetController {
 
     // BUSCAR TODAS AS CONTAS ATIVAS
     @GetMapping
-    public List<AccountGetDTO> listAccountsActives(){
-        return accountGetService.listAccountsAcitives();
+    public ResponseEntity<List<AccountGetDTO>> listAccountsActives(){
+        return ResponseEntity.ok().body(accountGetService.listAccountsAcitives());
+
+
     }
 
     // BUSCAR TODAS AS CONTAS INATIVAS
     @GetMapping("/inativas")
-    public List<AccountGetDTO> listAccountsInactives(){
-        return accountGetService.listAccountsInactive();
+    public ResponseEntity<List<AccountGetDTO>> listAccountsInactives(){
+        return ResponseEntity.ok().body(accountGetService.listAccountsInactive());
     }
 
     // BUSCR  POR ID
     @GetMapping("/id/{id}")
-    public AccountGetDTO searchById(@PathVariable("id") Long id){
-        return accountGetService.findById(id);
+    public ResponseEntity<AccountGetDTO> searchById(@PathVariable("id") Long id){
+        return ResponseEntity.ok().body(accountGetService.findById(id));
     }
 
     // CONSULTAR SALDO
@@ -45,26 +47,26 @@ public class AccountGetController {
 
     // BUSCAR POR NÚMERO CONTA
     @GetMapping("/number/{number}")
-    public AccountGetDTO searchByAccountNumber(@PathVariable("number") String number){
-        return accountGetService.findByAccountNumber(number);
+    public ResponseEntity<AccountGetDTO> searchByAccountNumber(@PathVariable("number") String number){
+        return ResponseEntity.ok().body(accountGetService.findByAccountNumber(number));
     }
 
     // BUSCAR POR STATUS
     @GetMapping("/status/{status}")
-    public List<AccountGetDTO> searchByStatus(@PathVariable("status") String status){
-        return accountGetService.searchByStatus(status);
+    public ResponseEntity<List<AccountGetDTO>> searchByStatus(@PathVariable("status") String status){
+        return ResponseEntity.ok().body(accountGetService.searchByStatus(status));
     }
 
     // BUSCAR POR TIPO DE CONTA
     @GetMapping("/type/{type}")
-    public List<AccountGetDTO> searchByType(@PathVariable("type") String type){
-        return accountGetService.searchByType(type);
+    public ResponseEntity<List<AccountGetDTO>> searchByType(@PathVariable("type") String type){
+        return ResponseEntity.ok().body(accountGetService.searchByType(type));
     }
 
     // BUSCAR POR CPF DE CLIENTE
     @GetMapping("customer/cpf/{cpf}")
-    public List<AccountGetDTO> searchByCpFCustomer(@PathVariable("cpf") String cpf){
-        return accountGetService.searchByCustomer(cpf);
+    public ResponseEntity<List<AccountGetDTO>> searchByCpFCustomer(@PathVariable("cpf") String cpf){
+        return ResponseEntity.ok().body(accountGetService.searchByCustomer(cpf));
     }
 
 
