@@ -112,6 +112,39 @@ public class GetTest {
         verify(accountGetService).checkBalance("12345");
     }
 
+    @Test
+    @DisplayName("Deve retornar Status 200 quando encontrar conta com o mesmo número passado por parametro.")
+    void deveRetrnarStatus200SeContaForEncontrada() throws Exception {
+        when(accountGetService.findByAccountNumber("12345")).thenReturn(any(AccountGetDTO.class));
+
+        mvc.perform(get("/accounts/number/12345")).andExpect(status().isOk());
+
+        verify(accountGetService).findByAccountNumber("12345");
+    }
+
+    @Test
+    @DisplayName("Deve retornar status 404 - NOT FOUND se Cnt não com número solicitado não for encontrado.")
+    void retornar404SeContaComNumeroSolicitadoNaoExistir() throws Exception {
+        doThrow(new AccountDoesNotExistException("ERRO! Conta não existe."))
+                .when(accountGetService)
+                .findByAccountNumber("12345");
+
+        mvc.perform(get("/accounts/number/12345")).andExpect(status().isNotFound());
+
+        verify(accountGetService).findByAccountNumber("12345");
+    }
+
+    @Test
+    @DisplayName("Deve retornar status 409 - CONFLICT se Conta com número solicitado estiver inativa.")
+    void retornar404SeContaComNumeroSolicitadoEstiverInativa() throws Exception {
+        doThrow(new AccountInactiveException( "ERRO! Conta inativa."))
+                .when(accountGetService)
+                .findByAccountNumber("12345");
+
+        mvc.perform(get("/accounts/number/12345")).andExpect(status().isConflict());
+
+        verify(accountGetService).findByAccountNumber("12345");
+    }
 
 
 }
