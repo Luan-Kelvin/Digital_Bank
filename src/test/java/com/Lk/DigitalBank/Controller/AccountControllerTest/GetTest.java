@@ -3,10 +3,7 @@ package com.Lk.DigitalBank.Controller.AccountControllerTest;
 import com.Lk.DigitalBank.Controller.AccountController.GetRequest.AccountGetController;
 import com.Lk.DigitalBank.DTOs.Account.AccountBalanceDTO;
 import com.Lk.DigitalBank.DTOs.Account.AccountGetDTO;
-import com.Lk.DigitalBank.Exception.AccountDoesNotExistException;
-import com.Lk.DigitalBank.Exception.AccountInactiveException;
-import com.Lk.DigitalBank.Exception.InvalidAccountStatusException;
-import com.Lk.DigitalBank.Exception.InvalidAccountTypeException;
+import com.Lk.DigitalBank.Exception.*;
 import com.Lk.DigitalBank.Services.AccountService.AccountGetService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -190,6 +187,30 @@ public class GetTest {
         mvc.perform(get("/accounts/type/type")).andExpect(status().isConflict());
 
         verify(accountGetService).searchByType("type");
+    }
+
+    @Test
+    @DisplayName("Deve retornar Status 200 - OK se metodo carrgerar listade contas daquele cliente")
+    void deveRetornarStatus200SeEncontarrContasDeCliente() throws Exception {
+        String cpf = "123.456.789-19";
+        List<AccountGetDTO> list = new ArrayList<>();
+        when(accountGetService.searchByCustomer(cpf)).thenReturn(list);
+
+        mvc.perform(get("/accounts/customer/cpf/"+cpf)).andExpect(status().isOk());
+
+        verify(accountGetService).searchByCustomer(cpf);
+    }
+
+    @Test
+    @DisplayName("Deve retornar status 409 - CONFLICT se cpf for inválido.")
+    void deveRetornar409SeCpfForInvalido() throws Exception {
+        String cpf = "123.456.78912";
+        doThrow(new InvalidCPFException("ERRO! Cpf inválido"))
+                .when(accountGetService).searchByCustomer(cpf);
+
+        mvc.perform(get("/accounts/customer/cpf/"+cpf)).andExpect(status().isConflict());
+
+        verify(accountGetService).searchByCustomer(cpf);
     }
 
 

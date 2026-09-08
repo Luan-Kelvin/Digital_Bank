@@ -64,7 +64,7 @@ public class AccountGetController {
     }
 
     // BUSCAR POR CPF DE CLIENTE
-    @GetMapping("customer/cpf/{cpf}")
+    @GetMapping("/customer/cpf/{cpf}")
     public ResponseEntity<List<AccountGetDTO>> searchByCpFCustomer(@PathVariable("cpf") String cpf){
         return ResponseEntity.ok().body(accountGetService.searchByCustomer(cpf));
     }

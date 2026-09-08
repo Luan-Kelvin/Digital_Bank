@@ -164,13 +164,13 @@ public class RestAdvince {
     public ResponseEntity<ErrorResponse> invalidCPF(InvalidCPFException e, HttpServletRequest request){
         ErrorResponse erro = new ErrorResponse(
                 LocalDateTime.now(),
-                HttpStatus.BAD_REQUEST.value(),
+                HttpStatus.CONFLICT.value(),
                 "CPF Inválido",
                 e.getMessage(),
                 request.getRequestURI()
         );
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(erro);
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(erro);
     }
 
     @ExceptionHandler(InvalidCreditCreditPinException.class)
