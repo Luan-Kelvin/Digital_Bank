@@ -5,7 +5,6 @@ import com.Lk.DigitalBank.Conversores.Conversor;
 import com.Lk.DigitalBank.DTOs.Account.AccountGetDTO;
 import com.Lk.DigitalBank.DTOs.Account.AccountPostDTO;
 import com.Lk.DigitalBank.DTOs.Account.TransferPixDTO;
-import com.Lk.DigitalBank.DTOs.Transaction.TransactionGetDTO;
 import com.Lk.DigitalBank.DTOs.Transaction.TransactionPixDTO;
 import com.Lk.DigitalBank.Entity.Account;
 import com.Lk.DigitalBank.Entity.Customer;
