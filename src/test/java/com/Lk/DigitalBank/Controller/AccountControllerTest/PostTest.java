@@ -3,9 +3,14 @@ package com.Lk.DigitalBank.Controller.AccountControllerTest;
 import com.Lk.DigitalBank.Controller.AccountController.PostRequest.AccountPostController;
 import com.Lk.DigitalBank.DTOs.Account.AccountGetDTO;
 import com.Lk.DigitalBank.DTOs.Account.AccountPostDTO;
+import com.Lk.DigitalBank.DTOs.Account.DepositAndWithDrawAccountDTO;
+import com.Lk.DigitalBank.DTOs.Transaction.TransactionGetDTO;
 import com.Lk.DigitalBank.ENUM.AccountStatus;
 import com.Lk.DigitalBank.ENUM.AccountType;
+import com.Lk.DigitalBank.ENUM.TransactionType;
 import com.Lk.DigitalBank.Exception.AccountAlreadyExistsException;
+import com.Lk.DigitalBank.Exception.AccountDoesNotExistException;
+import com.Lk.DigitalBank.Exception.AccountInactiveException;
 import com.Lk.DigitalBank.Exception.CustomerDoesNotExistException;
 import com.Lk.DigitalBank.Services.AccountService.AccountPostService;
 import com.Lk.DigitalBank.Services.AccountService.AccountServiceGeneral;
@@ -18,6 +23,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -137,6 +143,84 @@ public class PostTest {
         ).andExpect(status().isConflict());
 
         verify(accountPostService).createAccount(any(AccountPostDTO.class));
+    }
+
+    @Test
+    @DisplayName("Deve retornar Status 200 - OK quando deposito for bem sucedido")
+    void deveRetornarStatus200AposDeposito() throws Exception {
+        String json = """
+                
+                {
+                    "accountNumber": "1010 1010 1010 1010",
+                    "value": 200
+                }
+                
+                """;
+
+        TransactionGetDTO transactionGetDTO = new TransactionGetDTO(
+                1L,
+                TransactionType.DEPOSIT,
+                BigDecimal.valueOf(200),
+                LocalDateTime.now(),
+                "Deposito feito",
+                "1010 1010 1010 1010"
+        );
+
+        when(accountServiceGeneral.deposit(any(DepositAndWithDrawAccountDTO.class))).thenReturn(transactionGetDTO);
+
+        mvc.perform(
+                post("/accounts/deposit")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json)
+        ).andExpect(status().isOk());
+
+        verify(accountServiceGeneral).deposit(any(DepositAndWithDrawAccountDTO.class));
+    }
+
+    @Test
+    @DisplayName("Deve lançar 404 - NOT FOUND Se conta não existir.")
+    void deveRetornar404SeContaNaoExistir() throws Exception {
+        String json = """
+                {
+                    "accountNumber": "1010 1010 1010 1010",
+                    "value": 200
+                }
+                """;
+
+        doThrow(new AccountDoesNotExistException("ERRO! Conta não existe no banco."))
+                .when(accountServiceGeneral).deposit(any(DepositAndWithDrawAccountDTO.class));
+
+        mvc.perform(
+                post("/accounts/deposit")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json)
+        ).andExpect(status().isNotFound());
+
+        verify(accountServiceGeneral).deposit(any(DepositAndWithDrawAccountDTO.class));
+    }
+
+    @Test
+    @DisplayName("Deve retornar 409 - CONFLICT se conta estiver inativa para depósito.")
+    void deveRetornar409SeContaEstiverInativa() throws Exception {
+        String json = """
+                {
+                    "accountNumber": "1010 1010 1010 1010",
+                    "value": 200
+                }
+                """;
+
+        doThrow(new AccountInactiveException("ERRO! COnta está inativa"))
+                .when(accountServiceGeneral).deposit(any(DepositAndWithDrawAccountDTO.class));
+
+        mvc.perform(
+                post("/accounts/deposit")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json)
+        ).andExpect(status().isConflict());
+
+        verify(accountServiceGeneral).deposit(any(DepositAndWithDrawAccountDTO.class));
+
+
     }
 
 }

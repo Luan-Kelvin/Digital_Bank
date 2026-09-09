@@ -1,6 +1,7 @@
 package com.Lk.DigitalBank.Services.AccountService;
 
 import com.Lk.DigitalBank.Conversores.Conversor;
+import com.Lk.DigitalBank.DTOs.Account.DepositAndWithDrawAccountDTO;
 import com.Lk.DigitalBank.DTOs.Transaction.TransactionGetDTO;
 import com.Lk.DigitalBank.ENUM.TransactionType;
 import com.Lk.DigitalBank.Entity.Account;
@@ -59,7 +60,9 @@ public class AccountSerivcegeneralTest {
         when(accountRepository.findByAccountNumber("12345")).thenReturn(Optional.of(account));
         when(conversor.converterTransaction(transaction)).thenReturn(dto);
 
-        TransactionGetDTO transactionGetDTO = accountServiceGeneral.deposit("12345", BigDecimal.valueOf(100));
+        DepositAndWithDrawAccountDTO dtoDeposit = new DepositAndWithDrawAccountDTO("1010 1010 1010 1010", BigDecimal.valueOf(150));
+
+        TransactionGetDTO transactionGetDTO = accountServiceGeneral.deposit(dtoDeposit);
 
         assertEquals("12345", transactionGetDTO.accountNumber());
         assertEquals(1L, transactionGetDTO.id());
@@ -77,7 +80,9 @@ public class AccountSerivcegeneralTest {
 
         when(accountRepository.findByAccountNumber(numberAccount)).thenReturn(Optional.empty());
 
-        assertThrows(AccountDoesNotExistException.class, () -> accountServiceGeneral.deposit(numberAccount, BigDecimal.valueOf(200)));
+        DepositAndWithDrawAccountDTO dto = new DepositAndWithDrawAccountDTO("12345", BigDecimal.valueOf(200));
+
+        assertThrows(AccountDoesNotExistException.class, () -> accountServiceGeneral.deposit(dto));
 
         verify(accountRepository).findByAccountNumber(numberAccount);
         verify(transactionRepository, never()).save(any(Transaction.class));
@@ -93,7 +98,9 @@ public class AccountSerivcegeneralTest {
 
         when(accountRepository.findByAccountNumber(numberAccount)).thenReturn(Optional.of(account));
 
-        assertThrows(AccountInactiveException.class, () -> accountServiceGeneral.deposit(numberAccount, BigDecimal.valueOf(100)));
+        DepositAndWithDrawAccountDTO dto = new DepositAndWithDrawAccountDTO("12345", BigDecimal.valueOf(200));
+
+        assertThrows(AccountInactiveException.class, () -> accountServiceGeneral.deposit(dto));
 
         verify(accountRepository).findByAccountNumber(numberAccount);
         verify(transactionRepository, never()).save(any(Transaction.class));
@@ -120,6 +127,7 @@ public class AccountSerivcegeneralTest {
 
         when(accountRepository.findByAccountNumber(accoutnNumber)).thenReturn(Optional.of(account));
         when(conversor.converterTransaction(transaction)).thenReturn(dto);
+
 
         TransactionGetDTO transactionGetDTO = accountServiceGeneral.withdraw(accoutnNumber, BigDecimal.valueOf(100));
 
