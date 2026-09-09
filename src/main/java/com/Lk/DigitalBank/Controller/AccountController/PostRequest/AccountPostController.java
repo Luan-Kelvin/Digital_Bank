@@ -36,7 +36,7 @@ public class AccountPostController {
     @PostMapping("/deposit")
     public ResponseEntity<TransactionGetDTO> deposit(@RequestBody @Valid DepositAndWithDrawAccountDTO dto){
 
-        TransactionGetDTO transaction = accountServiceGeneral.deposit(dto.accountNumber(), dto.value());
+        TransactionGetDTO transaction = accountServiceGeneral.deposit(dto);
 
         return ResponseEntity.status(HttpStatus.OK).body(transaction);
     }
