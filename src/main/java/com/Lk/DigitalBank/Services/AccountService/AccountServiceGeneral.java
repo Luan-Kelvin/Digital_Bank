@@ -51,23 +51,23 @@ public class AccountServiceGeneral {
 
     // SACAR DINHEIRO
     @Transactional
-    public TransactionGetDTO withdraw(String numberAccount, BigDecimal value){
-        Account account = accountRepository.findByAccountNumber(numberAccount)
-                .orElseThrow(() -> new AccountDoesNotExistException(String.format("ERRO! Conta com número %s não existe.", numberAccount)));
+    public TransactionGetDTO withdraw(DepositAndWithDrawAccountDTO dto){
+        Account account = accountRepository.findByAccountNumber(dto.accountNumber())
+                .orElseThrow(() -> new AccountDoesNotExistException(String.format("ERRO! Conta com número %s não existe.", dto.accountNumber())));
 
         if (!account.isActive()){
             throw new AccountInactiveException("ERRO! Status de conta esta inátivo.");
         }
 
-        account.withdraw(value);
+        account.withdraw(dto.value());
 
-        String description = String.format("Saque feito no valor de R$%s", value);
-        Transaction transaction = new Transaction(TransactionType.WITHDRAW, value, description);
+        String description = String.format("Saque feito no valor de R$%s", dto.value());
+        Transaction transaction = new Transaction(TransactionType.WITHDRAW, dto.value(), description);
 
         account.addTransaction(transaction);
         transactionRepository.save(transaction);
 
-        logger.info(String.format("Saque no valor de R$%s realizado com sucesso!", value));
+        logger.info(String.format("Saque no valor de R$%s realizado com sucesso!", dto.value()));
 
         return conversor.converterTransaction(transaction);
     }

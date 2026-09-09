@@ -45,7 +45,7 @@ public class AccountPostController {
     @PostMapping("/withdraw")
     public ResponseEntity<TransactionGetDTO> withdraw(@RequestBody @Valid DepositAndWithDrawAccountDTO dto){
 
-        TransactionGetDTO transaction = accountServiceGeneral.withdraw(dto.accountNumber(), dto.value());
+        TransactionGetDTO transaction = accountServiceGeneral.withdraw(dto);
 
         return ResponseEntity.status(HttpStatus.OK).body(transaction);
     }

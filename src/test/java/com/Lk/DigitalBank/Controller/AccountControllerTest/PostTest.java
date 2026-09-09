@@ -219,8 +219,76 @@ public class PostTest {
         ).andExpect(status().isConflict());
 
         verify(accountServiceGeneral).deposit(any(DepositAndWithDrawAccountDTO.class));
+    }
 
+    @Test
+    @DisplayName("Deve retornar 200 - Ok se saque for feito com sucesso!")
+    void retonar200SeSaqueForFeitoComSucesso() throws Exception {
+        String json = """
+                {
+                    "accountNumber": "1010 1010 1010 1010",
+                    "value": 150
+                }
+                """;
 
+        TransactionGetDTO transactionGetDTO = new TransactionGetDTO(
+                1L,
+                TransactionType.WITHDRAW,
+                BigDecimal.valueOf(150),
+                LocalDateTime.now(),
+                "Saque",
+                "1010 1010 1010 1010"
+        );
+
+        when(accountServiceGeneral.withdraw(any(DepositAndWithDrawAccountDTO.class))).thenReturn(transactionGetDTO);
+
+        mvc.perform(
+                post("/accounts/withdraw")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json)
+        ).andExpect(status().isOk());
+
+        verify(accountServiceGeneral).withdraw(any(DepositAndWithDrawAccountDTO.class));
+    }
+
+    @Test
+    @DisplayName("Deve retornr Status 404 - NOT FOUND se conta não existir.")
+    void deveRetornar404SeContaNaoExistirNaHoraDoSaque() throws Exception {
+        String json = """
+                {
+                    "accountNumber": "1010 1010 1010 1010",
+                    "value": 150
+                }               
+                """;
+
+        doThrow(new AccountDoesNotExistException("ERRO! Conta não existe"))
+                .when(accountServiceGeneral).withdraw(any(DepositAndWithDrawAccountDTO.class));
+
+        mvc.perform(
+                post("/accounts/withdraw")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json)
+        ).andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("Deve lançar 409 - CONFLIC se conta estiver inativa para saque")
+    void deveRetornar409SeContaEstiverInativaParaSaque() throws Exception {
+        String json = """
+                {
+                    "accountNumber": "1010 1010 1010 1010",
+                    "value": 150
+                }               
+                """;
+
+        doThrow(new AccountInactiveException("ERRO! Conta inativa para saque"))
+                .when(accountServiceGeneral).withdraw(any(DepositAndWithDrawAccountDTO.class));
+
+        mvc.perform(
+                post("/accounts/withdraw")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json)
+        ).andExpect(status().isConflict());
     }
 
 }

@@ -128,8 +128,9 @@ public class AccountSerivcegeneralTest {
         when(accountRepository.findByAccountNumber(accoutnNumber)).thenReturn(Optional.of(account));
         when(conversor.converterTransaction(transaction)).thenReturn(dto);
 
+        DepositAndWithDrawAccountDTO dtoWithidraw = new DepositAndWithDrawAccountDTO("12345", BigDecimal.valueOf(200));
 
-        TransactionGetDTO transactionGetDTO = accountServiceGeneral.withdraw(accoutnNumber, BigDecimal.valueOf(100));
+        TransactionGetDTO transactionGetDTO = accountServiceGeneral.withdraw(dtoWithidraw);
 
         assertEquals(1L, transactionGetDTO.id());
         assertEquals("12345", transactionGetDTO.accountNumber());
@@ -155,7 +156,9 @@ public class AccountSerivcegeneralTest {
 
         when(accountRepository.findByAccountNumber(accounNumber)).thenReturn(Optional.empty());
 
-        assertThrows(AccountDoesNotExistException.class, () -> accountServiceGeneral.withdraw(accounNumber, BigDecimal.valueOf(100)));
+        DepositAndWithDrawAccountDTO dto = new DepositAndWithDrawAccountDTO("12345", BigDecimal.valueOf(200));
+
+        assertThrows(AccountDoesNotExistException.class, () -> accountServiceGeneral.withdraw(dto));
 
         verify(accountRepository).findByAccountNumber(accounNumber);
         verify(conversor, never()).converterTransaction(transaction);
@@ -172,7 +175,9 @@ public class AccountSerivcegeneralTest {
 
         when(accountRepository.findByAccountNumber(account.getAccountNumber())).thenReturn(Optional.of(account));
 
-        assertThrows(AccountInactiveException.class, () -> accountServiceGeneral.withdraw(account.getAccountNumber(), BigDecimal.valueOf(100)));
+        DepositAndWithDrawAccountDTO dtoWithdraw = new DepositAndWithDrawAccountDTO("12345", BigDecimal.valueOf(200));
+
+        assertThrows(AccountInactiveException.class, () -> accountServiceGeneral.withdraw(dtoWithdraw));
 
         verify(accountRepository).findByAccountNumber(account.getAccountNumber());
         verify(transactionRepository, never()).save(any(Transaction.class));
