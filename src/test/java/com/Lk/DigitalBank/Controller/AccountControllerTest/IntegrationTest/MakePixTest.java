@@ -1,4 +1,4 @@
-package com.Lk.DigitalBank.Controller.AccountControllerTest;
+package com.Lk.DigitalBank.Controller.AccountControllerTest.IntegrationTest;
 
 import com.Lk.DigitalBank.ENUM.AccountType;
 import com.Lk.DigitalBank.Entity.Account;
@@ -27,7 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class IntegrationTest {
+public class MakePixTest {
 
     @Autowired
     private MockMvc mvc;
