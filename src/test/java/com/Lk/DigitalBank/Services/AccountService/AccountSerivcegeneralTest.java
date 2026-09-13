@@ -45,7 +45,7 @@ public class AccountSerivcegeneralTest {
     @Test
     public void deveRetornarTransactionQuandoDepositoForFeito(){
         Account account = new Account();
-        account.addNumberAccount("12345");
+        account.addNumberAccount("1010 1010 1010 1010");
 
         Transaction transaction = new Transaction();
         TransactionGetDTO dto = new TransactionGetDTO(
@@ -54,33 +54,33 @@ public class AccountSerivcegeneralTest {
                 BigDecimal.valueOf(100),
                 LocalDateTime.now(),
                 "Depósito em dinheiro",
-                "12345"
+                "1010 1010 1010 1010"
                 );
 
-        when(accountRepository.findByAccountNumber("12345")).thenReturn(Optional.of(account));
+        when(accountRepository.findByAccountNumber("1010 1010 1010 1010")).thenReturn(Optional.of(account));
         when(conversor.converterTransaction(transaction)).thenReturn(dto);
 
         DepositAndWithDrawAccountDTO dtoDeposit = new DepositAndWithDrawAccountDTO("1010 1010 1010 1010", BigDecimal.valueOf(150));
 
         TransactionGetDTO transactionGetDTO = accountServiceGeneral.deposit(dtoDeposit);
 
-        assertEquals("12345", transactionGetDTO.accountNumber());
+        assertEquals("1010 1010 1010 1010", transactionGetDTO.accountNumber());
         assertEquals(1L, transactionGetDTO.id());
         assertEquals(BigDecimal.valueOf(100), transactionGetDTO.value());
         assertEquals("Depósito em dinheiro", transactionGetDTO.description());
 
-        verify(accountRepository).findByAccountNumber("12345");
+        verify(accountRepository).findByAccountNumber("1010 1010 1010 1010");
         verify(conversor).converterTransaction(transaction);
         verify(transactionRepository).save(any(Transaction.class));
     }
 
     @Test
     public void deveLancarExcecaoSeContaNaoExistir(){
-        String numberAccount = "12345";
+        String numberAccount = "1010 1010 1010 1010";
 
         when(accountRepository.findByAccountNumber(numberAccount)).thenReturn(Optional.empty());
 
-        DepositAndWithDrawAccountDTO dto = new DepositAndWithDrawAccountDTO("12345", BigDecimal.valueOf(200));
+        DepositAndWithDrawAccountDTO dto = new DepositAndWithDrawAccountDTO("1010 1010 1010 1010", BigDecimal.valueOf(200));
 
         assertThrows(AccountDoesNotExistException.class, () -> accountServiceGeneral.deposit(dto));
 

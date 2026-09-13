@@ -5,6 +5,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 
+import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
+import org.springframework.test.context.ActiveProfiles;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -12,6 +15,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DataJpaTest
+@ActiveProfiles("test")
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class AccountRepositoryTest {
 
     @Autowired
@@ -21,15 +26,15 @@ public class AccountRepositoryTest {
     public void deveBuscarAccountPorNumeroDeConta(){
         Account account = new Account();
 
-        account.addNumberAccount("12345");
+        account.addNumberAccount("1010 1010 1010 1010");
 
         accountRepository.save(account);
 
-        Optional<Account> ac = accountRepository.findByAccountNumber("12345");
+        Optional<Account> ac = accountRepository.findByAccountNumber("1010 1010 1010 1010");
 
         assertTrue(ac.isPresent());
 
-        assertEquals("12345", ac.get().getAccountNumber());
+        assertEquals("1010 1010 1010 1010", ac.get().getAccountNumber());
     }
 
     @Test
@@ -37,8 +42,8 @@ public class AccountRepositoryTest {
         Account account1 = new Account();
         Account account2 = new Account();
 
-        account1.addNumberAccount("12345");
-        account2.addNumberAccount("54321");
+        account1.addNumberAccount("1010 1010 1010 1010");
+        account2.addNumberAccount("2020 2020 2020 2020");
 
         accountRepository.save(account1);
         accountRepository.save(account2);
@@ -46,7 +51,7 @@ public class AccountRepositoryTest {
         List<Account> accounts = accountRepository.findAll();
 
         assertEquals(2, accounts.size());
-        assertEquals("12345", accounts.get(0).getAccountNumber());
-        assertEquals("54321", accounts.get(1).getAccountNumber());
+        assertEquals("1010 1010 1010 1010", accounts.get(0).getAccountNumber());
+        assertEquals("2020 2020 2020 2020", accounts.get(1).getAccountNumber());
     }
 }
