@@ -1,7 +1,6 @@
 package com.Lk.DigitalBank.Services.AccountEvents;
 
 import com.Lk.DigitalBank.Conversores.Conversor;
-import com.Lk.DigitalBank.DTOs.Account.AccountPostDTO;
 import com.Lk.DigitalBank.DTOs.AccountEvents.AccountEventsGetDTO;
 import com.Lk.DigitalBank.DTOs.AccountEvents.AccountEventsPostDTO;
 import com.Lk.DigitalBank.Entity.Account;
@@ -9,7 +8,6 @@ import com.Lk.DigitalBank.Entity.AccountEvents;
 import com.Lk.DigitalBank.Repository.AccountEventsRepository;
 import com.Lk.DigitalBank.Services.AccountService.AccountGetService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(
-        name = "account_events",
+        name = "account_events", schema = "entitys",
         uniqueConstraints = {
                 @UniqueConstraint(
                         columnNames = {"account_id", "sequence_number"}
