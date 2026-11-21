@@ -71,6 +71,6 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     // CONTROLAR O ACESSO SIMULTANEO
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT a FROM Account a WHERE a.id = :id")
-    org.hibernate.internal.util.Optional<Account> findByIdForUpdate(Long id);
+    Optional<Account> findByIdForUpdate(Long id);
 
 }

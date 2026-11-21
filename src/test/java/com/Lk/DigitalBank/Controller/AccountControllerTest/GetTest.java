@@ -58,11 +58,11 @@ public class GetTest {
     @Test
     @DisplayName("Deve retornar Status 200 - OK se encontrar a contapor ID.")
     void deveRetornar200NaBuscaPorIdDaConta() throws Exception {
-        when(accountGetService.findById(1L)).thenReturn(any(AccountGetDTO.class));
+        when(accountGetService.findByIdController(1L)).thenReturn(any(AccountGetDTO.class));
 
         mvc.perform(get("/accounts/id/1")).andExpect(status().isOk());
 
-        verify(accountGetService).findById(1L);
+        verify(accountGetService).findByIdController(1L);
 
     }
 
@@ -70,11 +70,11 @@ public class GetTest {
     @DisplayName("Deve retornar status 404 - NOT FOUND Se id da conta não for encontrada.")
     void deveRetornar404SeIdDaContaNaoExistir() throws Exception {
         doThrow(new AccountDoesNotExistException("ERRO! Conta não exise."))
-                .when(accountGetService).findById(1L);
+                .when(accountGetService).findByIdController(1L);
 
         mvc.perform(get("/accounts/id/1")).andExpect(status().isNotFound());
 
-        verify(accountGetService).findById(1L);
+        verify(accountGetService).findByIdController(1L);
     }
 
     @Test

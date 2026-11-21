@@ -61,12 +61,18 @@ public class AccountGetService {
         return dtos;
     }
 
-    // BUSCAR CONTA POR ID
-    public AccountGetDTO findById(Long id){
+    // BUSCAR CONTA POR ID (CONTROLLER)
+    public AccountGetDTO findByIdController(Long id){
         Account account = accountRepository.findById(id)
                 .orElseThrow(() -> new AccountDoesNotExistException(String.format("ERRO! nenhuma conta com ID %s encontrada.", id)));
 
         return conversor.converterAccount(account);
+    }
+
+    // BUSCAR CONTA POR ID (CLASSES)
+    public Account findById(Long id){
+        return accountRepository.findByIdForUpdate(id)
+                .orElseThrow(() -> new AccountDoesNotExistException(String.format("ERRO! nenhuma conta com ID %s encontrada.", id)));
     }
 
     // BUSCAR POR NÚMERO DA CONTA

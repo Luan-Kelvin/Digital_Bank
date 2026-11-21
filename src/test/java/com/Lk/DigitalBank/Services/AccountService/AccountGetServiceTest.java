@@ -13,7 +13,6 @@ import com.Lk.DigitalBank.Repository.AccountRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -51,7 +50,7 @@ public class AccountGetServiceTest {
 
         when(conversor.converterAccount(account)).thenReturn(dto);
 
-        AccountGetDTO resultado = accountGetService.findById(id);
+        AccountGetDTO resultado = accountGetService.findByIdController(id);
 
         assertEquals(dto, resultado);
 
@@ -69,7 +68,7 @@ public class AccountGetServiceTest {
 
         when(accountRepository.findById(id)).thenReturn(Optional.empty());
 
-        assertThrows(AccountDoesNotExistException.class, () -> accountGetService.findById(id));
+        assertThrows(AccountDoesNotExistException.class, () -> accountGetService.findByIdController(id));
 
         verify(accountRepository).findById(id);
     }

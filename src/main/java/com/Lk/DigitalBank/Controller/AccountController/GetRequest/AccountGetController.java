@@ -36,7 +36,7 @@ public class AccountGetController {
     // BUSCR  POR ID
     @GetMapping("/id/{id}")
     public ResponseEntity<AccountGetDTO> searchById(@PathVariable("id") Long id){
-        return ResponseEntity.ok().body(accountGetService.findById(id));
+        return ResponseEntity.ok().body(accountGetService.findByIdController(id));
     }
 
     // CONSULTAR SALDO

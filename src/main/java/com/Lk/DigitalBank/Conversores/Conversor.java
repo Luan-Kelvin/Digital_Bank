@@ -1,6 +1,7 @@
 package com.Lk.DigitalBank.Conversores;
 
 import com.Lk.DigitalBank.DTOs.Account.AccountGetDTO;
+import com.Lk.DigitalBank.DTOs.AccountEvents.AccountEventsGetDTO;
 import com.Lk.DigitalBank.DTOs.CreditCard.CreditCardGetDTO;
 import com.Lk.DigitalBank.DTOs.CreditCradPurchase.CreditCardPurchaseGetDTO;
 import com.Lk.DigitalBank.DTOs.Customer.CustomerGetDTO;
@@ -88,6 +89,18 @@ public class Conversor {
                 t.getDateAndTime(),
                 t.getDescription(),
                 t.getAccount().getAccountNumber()
+        );
+    }
+
+    // CONVERTER ACCOUNTEVENTES EM ACCOUNTEVENTSGETDTO
+    public AccountEventsGetDTO converterAccountevents(AccountEvents events){
+        return new AccountEventsGetDTO(
+                events.getId(),
+                events.getAccount().getId(),
+                events.getSequenceNumber(),
+                events.getEventType(),
+                events.getAmount(),
+                events.getOccurredAt()
         );
     }
 }
