@@ -58,6 +58,9 @@ public class Account {
     @OneToOne(cascade = CascadeType.ALL)
     private CreditCard creditCard;
 
+    @OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
+    private List<AccountEvents> accountEvents = new ArrayList<>();
+
     public Account(Customer customer, AccountType accountType) {
         this.customer = customer;
         this.accountType = accountType;
@@ -150,6 +153,17 @@ public class Account {
 
         this.addTransaction(transaction);
         return transaction;
+    }
+
+    // ADICIONAR EVENTO
+    public void addEvent(AccountEvents event){
+        if (event == null) {
+            return;
+        }
+
+        if (!accountEvents.contains(event)) {
+            accountEvents.add(event);
+        }
     }
 
     //ADICIONAR CLIENTE

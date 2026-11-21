@@ -4,7 +4,9 @@ import com.Lk.DigitalBank.ENUM.AccountStatus;
 import com.Lk.DigitalBank.ENUM.AccountType;
 import com.Lk.DigitalBank.Entity.Account;
 import com.Lk.DigitalBank.Entity.Customer;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDate;
@@ -64,5 +66,11 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
             SELECT nextval('entitys.account_number_seq')
             """, nativeQuery = true)
     Long nextAccountNumber();
+
+
+    // CONTROLAR O ACESSO SIMULTANEO
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT a FROM Account a WHERE a.id = :id")
+    org.hibernate.internal.util.Optional<Account> findByIdForUpdate(Long id);
 
 }

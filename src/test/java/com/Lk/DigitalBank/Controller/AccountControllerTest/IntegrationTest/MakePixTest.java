@@ -97,7 +97,6 @@ public class MakePixTest {
         assertEquals(2, listTransactions.size());
         assertEquals(listTransactions.get(0).getAccount().getAccountNumber(), senderAfterPix.getAccountNumber());
         assertEquals(listTransactions.get(1).getAccount().getAccountNumber(), recipientAfterPix.getAccountNumber());
-
     }
 
 }
