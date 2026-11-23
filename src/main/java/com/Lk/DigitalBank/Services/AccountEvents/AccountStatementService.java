@@ -2,12 +2,11 @@ package com.Lk.DigitalBank.Services.AccountEvents;
 
 import com.Lk.DigitalBank.DTOs.AccountEvents.AccountStatementDTO;
 import com.Lk.DigitalBank.DTOs.AccountEvents.AccountStatementEntryDTO;
-import com.Lk.DigitalBank.Entity.Account;
 import com.Lk.DigitalBank.Entity.AccountEvents;
+import com.Lk.DigitalBank.Exception.AccountDoesNotExistException;
 import com.Lk.DigitalBank.Repository.AccountEventsRepository;
 import com.Lk.DigitalBank.Repository.AccountRepository;
 import com.Lk.DigitalBank.Services.AccountService.AccountGetService;
-import com.Lk.DigitalBank.Services.AccountService.AccountServiceGeneral;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,13 +19,15 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AccountStatementService {
 
-    private final AccountGetService accountService;
     private final AccountEventsRepository accountEventsRepository;
+    private final AccountRepository accountRepository;
 
     @Transactional(readOnly = true)
     public AccountStatementDTO generateStatement(Long idAccount){
 
-        Account account = accountService.findById(idAccount);
+        if (!accountRepository.existsById(idAccount)){
+            throw new AccountDoesNotExistException(String.format("ERRO! Conta com ID %s, não existe.", idAccount));
+        }
 
         List<AccountEvents> events = accountEventsRepository.findAllByAccount_IdOrderBySequenceNumberAsc(idAccount);
 
@@ -34,7 +35,6 @@ public class AccountStatementService {
 
         List<AccountStatementEntryDTO> statements = new ArrayList<>();
 
-        // 4. Reproduzir os eventos
         for (AccountEvents event : events) {
 
             switch (event.getEventType()) {

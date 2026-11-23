@@ -13,6 +13,6 @@ public class DigitalBankApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		// termine os patch em credit card, lembre de criar dto para cada tipo de aletrção
+
 	}
 }
