@@ -4,6 +4,8 @@ package com.Lk.DigitalBank.Controller.AccountEventsService;
 import com.Lk.DigitalBank.DTOs.AccountEvents.AccountEventsGetDTO;
 import com.Lk.DigitalBank.DTOs.AccountEvents.AccountEventsPostDTO;
 import com.Lk.DigitalBank.DTOs.Account.DepositAndWithDrawAccountDTO;
+import com.Lk.DigitalBank.DTOs.AccountEvents.AccountStatementDTO;
+import com.Lk.DigitalBank.DTOs.AccountEvents.AccountStatementEntryDTO;
 import com.Lk.DigitalBank.ENUM.AccountType;
 import com.Lk.DigitalBank.ENUM.EventType;
 import com.Lk.DigitalBank.Entity.Account;
@@ -16,6 +18,7 @@ import com.Lk.DigitalBank.Repository.CustomerRepository;
 import com.Lk.DigitalBank.Repository.TransactionRepository;
 import com.Lk.DigitalBank.Services.AccountEvents.AccountBalanceReconstructor;
 import com.Lk.DigitalBank.Services.AccountEvents.AccountEventsService;
+import com.Lk.DigitalBank.Services.AccountEvents.AccountStatementService;
 import com.Lk.DigitalBank.Services.AccountService.AccountServiceGeneral;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -56,6 +59,9 @@ public class AccountEventsIntegrationTest {
 
     @Autowired
     private TransactionRepository transactionRepository;
+
+    @Autowired
+    private AccountStatementService accountStatementService;
 
     Long idAccount1;
     Long idAccount2;
@@ -247,6 +253,67 @@ public class AccountEventsIntegrationTest {
 
         assertThat(account.getBalance())
                 .isEqualByComparingTo(originalBalance);
+    }
+
+    @Test
+    @DisplayName("Deve gerar extrato atraves dos eventos registrados.")
+    void generateStatementTest() {
+        AccountEventsPostDTO postDTO1 = new AccountEventsPostDTO(idAccount1, EventType.MONEY_DEPOSITED, BigDecimal.valueOf(300));
+        AccountEventsPostDTO postDTO2 = new AccountEventsPostDTO(idAccount1, EventType.MONEY_DEPOSITED, BigDecimal.valueOf(100));
+        AccountEventsPostDTO postDTO3 = new AccountEventsPostDTO(idAccount1, EventType.MONEY_WITHDRAWN, BigDecimal.valueOf(100));
+
+        accountEventsService.registerEvents(postDTO1);
+        accountEventsService.registerEvents(postDTO2);
+        accountEventsService.registerEvents(postDTO3);
+
+        AccountStatementDTO statement = accountStatementService.generateStatement(idAccount1);
+
+        assertThat(statement.accountId()).isEqualTo(idAccount1);
+
+        assertThat(statement.entries()).hasSize(3);
+
+        assertThat(statement.finalBalance())
+                .isEqualByComparingTo("300.00");
+
+        assertThat(statement.entries().get(0).balanceAfter())
+                .isEqualByComparingTo("300.00");
+
+        assertThat(statement.entries().get(1).balanceAfter())
+                .isEqualByComparingTo("400.00");
+
+        assertThat(statement.entries().get(2).balanceAfter())
+                .isEqualByComparingTo("300.00");
+
+    }
+
+    @Test
+    @DisplayName("Deve apresentar os eventos na ordem correta")
+    void statementMustFollowSequenceOrderTest() {
+
+        accountEventsService.registerEvents(
+                createAccount(
+                        idAccount1,
+                        BigDecimal.valueOf(100),
+                        EventType.MONEY_DEPOSITED
+                )
+        );
+
+        accountEventsService.registerEvents(
+                createAccount(
+                        idAccount1,
+                        BigDecimal.valueOf(50),
+                        EventType.MONEY_WITHDRAWN
+                )
+        );
+
+        AccountStatementDTO statement =
+                accountStatementService.generateStatement(idAccount1);
+
+        assertThat(statement.entries().get(0).sequence())
+                .isEqualTo(0);
+
+        assertThat(statement.entries().get(1).sequence())
+                .isEqualTo(1);
     }
 
 }
