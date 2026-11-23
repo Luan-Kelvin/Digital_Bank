@@ -14,6 +14,7 @@ import com.Lk.DigitalBank.Repository.AccountEventsRepository;
 import com.Lk.DigitalBank.Repository.AccountRepository;
 import com.Lk.DigitalBank.Repository.CustomerRepository;
 import com.Lk.DigitalBank.Repository.TransactionRepository;
+import com.Lk.DigitalBank.Services.AccountEvents.AccountBalanceReconstructor;
 import com.Lk.DigitalBank.Services.AccountEvents.AccountEventsService;
 import com.Lk.DigitalBank.Services.AccountService.AccountServiceGeneral;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,6 +50,9 @@ public class AccountEventsIntegrationTest {
 
     @Autowired
     private AccountRepository accountRepository;
+
+    @Autowired
+    private AccountBalanceReconstructor balanceReconstructor;
 
     @Autowired
     private TransactionRepository transactionRepository;
@@ -170,6 +174,79 @@ public class AccountEventsIntegrationTest {
                 .filter(event -> event.getAccount().getId().equals(accountId))
                 .sorted(Comparator.comparing(AccountEvents::getSequenceNumber))
                 .toList();
+    }
+
+    @Test
+    @DisplayName("Deve reconstruir o saldo utilizando os eventos registrados")
+    void reconstructBalanceTest() {
+
+        // Registrar depósitos
+        accountEventsService.registerEvents(
+                createAccount(
+                        idAccount1,
+                        BigDecimal.valueOf(500),
+                        EventType.MONEY_DEPOSITED
+                )
+        );
+
+        accountEventsService.registerEvents(
+                createAccount(
+                        idAccount1,
+                        BigDecimal.valueOf(300),
+                        EventType.MONEY_DEPOSITED
+                )
+        );
+
+        // Registrar saque
+        accountEventsService.registerEvents(
+                createAccount(
+                        idAccount1,
+                        BigDecimal.valueOf(100),
+                        EventType.MONEY_WITHDRAWN
+                )
+        );
+
+        // Reconstruir saldo
+        BigDecimal reconstructedBalance =
+                balanceReconstructor.reconstructBalance(idAccount1);
+
+        assertThat(reconstructedBalance)
+                .isEqualByComparingTo("700.00");
+    }
+
+    @Test
+    @DisplayName("Deve reconstruir o saldo independentemente do saldo atual da conta")
+    void reconstructBalanceWithoutUsingCurrentBalanceTest() {
+
+        accountEventsService.registerEvents(
+                createAccount(
+                        idAccount1,
+                        BigDecimal.valueOf(500),
+                        EventType.MONEY_DEPOSITED
+                )
+        );
+
+        accountEventsService.registerEvents(
+                createAccount(
+                        idAccount1,
+                        BigDecimal.valueOf(200),
+                        EventType.MONEY_WITHDRAWN
+                )
+        );
+
+        Account account = accountRepository.findById(idAccount1)
+                .orElseThrow();
+
+        BigDecimal originalBalance = account.getBalance();
+
+        BigDecimal reconstructedBalance =
+                balanceReconstructor.reconstructBalance(idAccount1);
+
+        assertThat(reconstructedBalance)
+                .isEqualByComparingTo("300");
+
+        assertThat(account.getBalance())
+                .isEqualByComparingTo(originalBalance);
     }
 
 }

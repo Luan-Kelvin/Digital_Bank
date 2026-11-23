@@ -5,6 +5,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
+
 public interface AccountEventsRepository extends JpaRepository<AccountEvents, Long> {
 
     @Query("""
@@ -13,5 +15,9 @@ public interface AccountEventsRepository extends JpaRepository<AccountEvents, Lo
             WHERE e.account.id = :accountId
             """)
     Long findLastSequenceNumber(@Param("accountId") Long accountId);
+
+    List<AccountEvents> findAllByAccount_IdOrderBySequenceNumberAsc(
+            Long accountId
+    );
 
 }
