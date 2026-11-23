@@ -2,7 +2,9 @@ package com.Lk.DigitalBank.Services.AccountService;
 
 import com.Lk.DigitalBank.Conversores.Conversor;
 import com.Lk.DigitalBank.DTOs.Account.DepositAndWithDrawAccountDTO;
+import com.Lk.DigitalBank.DTOs.AccountEvents.AccountEventsPostDTO;
 import com.Lk.DigitalBank.DTOs.Transaction.TransactionGetDTO;
+import com.Lk.DigitalBank.ENUM.EventType;
 import com.Lk.DigitalBank.ENUM.TransactionType;
 import com.Lk.DigitalBank.Entity.Account;
 import com.Lk.DigitalBank.Entity.Transaction;
@@ -10,6 +12,7 @@ import com.Lk.DigitalBank.Exception.AccountDoesNotExistException;
 import com.Lk.DigitalBank.Exception.AccountInactiveException;
 import com.Lk.DigitalBank.Repository.AccountRepository;
 import com.Lk.DigitalBank.Repository.TransactionRepository;
+import com.Lk.DigitalBank.Services.AccountEvents.AccountEventsService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -25,6 +28,7 @@ public class AccountServiceGeneral {
     private final AccountRepository accountRepository;
     private final TransactionRepository transactionRepository;
     private final Conversor conversor;
+    private final AccountEventsService accountEventsService;
 
     // DEPOSITAR DINHEIRO
     @Transactional
@@ -36,7 +40,13 @@ public class AccountServiceGeneral {
             throw new AccountInactiveException("ERRO! Status de conta esta inátivo.");
         }
 
-        account.deposit(dto.value());
+        AccountEventsPostDTO accountEventsPostDTO = new AccountEventsPostDTO(
+                account.getId(),
+                EventType.MONEY_DEPOSITED,
+                dto.value()
+        );
+
+        accountEventsService.registerEvents(accountEventsPostDTO);
 
         String descriprion = String.format("Déposito feito no valor de R$%s", dto.value());
         Transaction transaction = new Transaction(TransactionType.DEPOSIT, dto.value(), descriprion);
@@ -59,7 +69,13 @@ public class AccountServiceGeneral {
             throw new AccountInactiveException("ERRO! Status de conta esta inátivo.");
         }
 
-        account.withdraw(dto.value());
+        AccountEventsPostDTO eventDTO = new AccountEventsPostDTO(
+                account.getId(),
+                EventType.MONEY_WITHDRAWN,
+                dto.value()
+        );
+
+        accountEventsService.registerEvents(eventDTO);
 
         String description = String.format("Saque feito no valor de R$%s", dto.value());
         Transaction transaction = new Transaction(TransactionType.WITHDRAW, dto.value(), description);

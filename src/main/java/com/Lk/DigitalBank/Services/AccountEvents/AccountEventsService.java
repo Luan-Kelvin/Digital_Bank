@@ -21,6 +21,7 @@ public class AccountEventsService {
 
     private final Conversor conversor;
 
+
     // REGISTRAR UM NOVO EVENTO
     @Transactional
     public AccountEventsGetDTO registerEvents(AccountEventsPostDTO postDTO){
@@ -35,9 +36,11 @@ public class AccountEventsService {
                 sequenceNumber
         );
 
+        accountEventsRepository.save(events);
+
         account.addEvent(events);
 
-        accountEventsRepository.save(events);
+        account.applyEvent(events);
 
         return conversor.converterAccountevents(events);
     }

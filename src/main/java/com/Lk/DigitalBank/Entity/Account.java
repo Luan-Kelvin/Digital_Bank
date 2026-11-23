@@ -166,6 +166,18 @@ public class Account {
         }
     }
 
+    // APLICAR EVENTO
+    public void applyEvent(AccountEvents event){
+
+        switch (event.getEventType()){
+            case MONEY_DEPOSITED -> deposit(event.getAmount());
+            case MONEY_WITHDRAWN -> withdraw(event.getAmount());
+            default -> throw new IllegalArgumentException(
+                    "Tipo de evento ainda não implementado: "
+                            + event.getEventType());
+        }
+    }
+
     //ADICIONAR CLIENTE
     public void addCustomer(Customer customer){
         this.customer = customer;
