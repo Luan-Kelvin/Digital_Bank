@@ -128,31 +128,17 @@ public class Account {
     }
 
     // FAZER PIX
-    public Transaction makeAPixTransfer(Account accountRecipient, BigDecimal value){
+    public void  makeAPixTransfer(BigDecimal value){
         if (this.balance.compareTo(value) < 0){
             throw new InsufficientBalanceWithdraw("ERRO! Saldo insuficiente para trnsferência PIX.");
         }
 
-        this.balance = this.balance.subtract(value);
-
-        Transaction transaction = new Transaction(
-                TransactionType.PIX_SENT,
-                value, String.format("Pix enviado para %s ", accountRecipient.getCustomer().getName()));
-
-        this.addTransaction(transaction);
-        return transaction;
+        this.balance = balance.subtract(value);
     }
 
     // RECEBER PIX
-    public Transaction receivePixTransfer(Account accountSent, BigDecimal value){
-        this.balance = this.balance.add(value);
-
-        Transaction transaction = new Transaction(
-                TransactionType.PIX_RECEVIED,
-                value, String.format("Pix recebido de %s ", accountSent.getCustomer().getName()));
-
-        this.addTransaction(transaction);
-        return transaction;
+    public void receivePixTransfer(BigDecimal value){
+        this.balance = balance.add(value);
     }
 
     // ADICIONAR EVENTO
@@ -168,15 +154,18 @@ public class Account {
 
     // APLICAR EVENTO
     public void applyEvent(AccountEvents event){
-
         switch (event.getEventType()){
             case MONEY_DEPOSITED -> deposit(event.getAmount());
+            case PIX_RECEIVED -> receivePixTransfer(event.getAmount());
+            case PIX_SENT -> makeAPixTransfer(event.getAmount());
             case MONEY_WITHDRAWN -> withdraw(event.getAmount());
             default -> throw new IllegalArgumentException(
                     "Tipo de evento ainda não implementado: "
                             + event.getEventType());
         }
     }
+
+
 
     //ADICIONAR CLIENTE
     public void addCustomer(Customer customer){

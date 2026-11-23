@@ -6,7 +6,6 @@ import com.Lk.DigitalBank.Entity.AccountEvents;
 import com.Lk.DigitalBank.Exception.AccountDoesNotExistException;
 import com.Lk.DigitalBank.Repository.AccountEventsRepository;
 import com.Lk.DigitalBank.Repository.AccountRepository;
-import com.Lk.DigitalBank.Services.AccountService.AccountGetService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

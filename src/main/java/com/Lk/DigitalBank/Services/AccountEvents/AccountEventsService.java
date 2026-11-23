@@ -36,11 +36,11 @@ public class AccountEventsService {
                 sequenceNumber
         );
 
+        account.applyEvent(events);
+
         accountEventsRepository.save(events);
 
         account.addEvent(events);
-
-        account.applyEvent(events);
 
         return conversor.converterAccountevents(events);
     }

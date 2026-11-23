@@ -1,16 +1,18 @@
 package com.Lk.DigitalBank.Controller.AccountEventsService;
 
 
+import com.Lk.DigitalBank.DTOs.Account.TransferPixDTO;
 import com.Lk.DigitalBank.DTOs.AccountEvents.AccountEventsGetDTO;
 import com.Lk.DigitalBank.DTOs.AccountEvents.AccountEventsPostDTO;
 import com.Lk.DigitalBank.DTOs.Account.DepositAndWithDrawAccountDTO;
 import com.Lk.DigitalBank.DTOs.AccountEvents.AccountStatementDTO;
-import com.Lk.DigitalBank.DTOs.AccountEvents.AccountStatementEntryDTO;
+import com.Lk.DigitalBank.DTOs.Transaction.TransactionPixDTO;
 import com.Lk.DigitalBank.ENUM.AccountType;
 import com.Lk.DigitalBank.ENUM.EventType;
 import com.Lk.DigitalBank.Entity.Account;
 import com.Lk.DigitalBank.Entity.AccountEvents;
 import com.Lk.DigitalBank.Entity.Customer;
+import com.Lk.DigitalBank.Exception.AccountInactiveException;
 import com.Lk.DigitalBank.Exception.InsufficientBalanceWithdraw;
 import com.Lk.DigitalBank.Repository.AccountEventsRepository;
 import com.Lk.DigitalBank.Repository.AccountRepository;
@@ -19,6 +21,7 @@ import com.Lk.DigitalBank.Repository.TransactionRepository;
 import com.Lk.DigitalBank.Services.AccountEvents.AccountBalanceReconstructor;
 import com.Lk.DigitalBank.Services.AccountEvents.AccountEventsService;
 import com.Lk.DigitalBank.Services.AccountEvents.AccountStatementService;
+import com.Lk.DigitalBank.Services.AccountService.AccountPostService;
 import com.Lk.DigitalBank.Services.AccountService.AccountServiceGeneral;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -26,6 +29,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -34,6 +38,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -63,15 +68,19 @@ public class AccountEventsIntegrationTest {
     @Autowired
     private AccountStatementService accountStatementService;
 
+    @Autowired
+    private AccountPostService accountPostService;
+
     Long idAccount1;
     Long idAccount2;
 
     @BeforeEach
+    @Transactional
     void setup(){
-        accountEventsRepository.deleteAll();
-        transactionRepository.deleteAll();
-        accountRepository.deleteAll();
-        customerRepository.deleteAll();
+        accountEventsRepository.deleteAllInBatch();
+        transactionRepository.deleteAllInBatch();
+        accountRepository.deleteAllInBatch();
+        customerRepository.deleteAllInBatch();
 
         Customer customer1 = new Customer("Janaina", "111.111.111-11", LocalDate.of(2004, 2, 24));
         Customer customer2 = new Customer("Joselinto", "211.111.111-11", LocalDate.of(2005, 5, 5));
@@ -314,6 +323,95 @@ public class AccountEventsIntegrationTest {
 
         assertThat(statement.entries().get(1).sequence())
                 .isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("Registrar dois eventos de atualizar saldo das resectivas contas.")
+    @Transactional
+    void makeAPixPayment(){
+        Account account1 = accountRepository.findById(idAccount1).orElseThrow();
+        Account account2 = accountRepository.findById(idAccount2).orElseThrow();
+
+        account1.deposit(BigDecimal.valueOf(500));
+
+        TransferPixDTO transferPixDTO = new TransferPixDTO(
+                account1.getAccountNumber(),
+                account2.getAccountNumber(),
+                BigDecimal.valueOf(200)
+        );
+
+        TransactionPixDTO transactionPixDTO = accountPostService.transferViaPix(transferPixDTO);
+
+        assertThat(account1.getAccountEvents().size()).isEqualTo(1);
+        assertThat(account2.getAccountEvents().size()).isEqualTo(1);
+
+        assertThat(account1.getBalance()).isEqualByComparingTo("300.00");
+        assertThat(account2.getBalance()).isEqualByComparingTo("200.00");
+
+    }
+
+    @Test
+    @DisplayName("Não deve registrar nenhum evento se saldo for insuficiente.")
+    @Transactional
+    void doesNotSaveEventIfBalanceIsInsufficient(){
+        Account account1 = accountRepository.findById(idAccount1).orElseThrow();
+        Account account2 = accountRepository.findById(idAccount2).orElseThrow();
+
+        TransferPixDTO transferPixDTO = new TransferPixDTO(
+                account1.getAccountNumber(),
+                account2.getAccountNumber(),
+                BigDecimal.valueOf(600)
+        );
+
+        assertThrows(InsufficientBalanceWithdraw.class, () -> accountPostService.transferViaPix(transferPixDTO));
+        assertThat(account1.getAccountEvents().size()).isEqualTo(0);
+        assertThat(account2.getAccountEvents().size()).isEqualTo(0);
+    }
+
+    @Test
+    @DisplayName("Não deve registrar nenhum evento se conta estver inativa.")
+    @Transactional
+    void doesNotSaveEventIfAccountInactive(){
+        Account account1 = accountRepository.findById(idAccount1).orElseThrow();
+        Account account2 = accountRepository.findById(idAccount2).orElseThrow();
+
+        account1.blockedAccount();
+
+        TransferPixDTO transferPixDTO = new TransferPixDTO(
+                account1.getAccountNumber(),
+                account2.getAccountNumber(),
+                BigDecimal.valueOf(600)
+        );
+
+        assertThrows(AccountInactiveException.class, () -> accountPostService.transferViaPix(transferPixDTO));
+        assertThat(account1.getAccountEvents().size()).isEqualTo(0);
+        assertThat(account2.getAccountEvents().size()).isEqualTo(0);
+    }
+
+
+    @Test
+    @DisplayName("Não deve registrar nenhum evento se segunda conta for inativa")
+    @Transactional
+    void doesNotSaveEventIfSecondAccountIsInactive(){
+        Account account1 = accountRepository.findById(idAccount1).orElseThrow();
+        Account account2 = accountRepository.findById(idAccount2).orElseThrow();
+
+        account1.deposit(BigDecimal.valueOf(500));
+        account2.blockedAccount();
+
+        TransferPixDTO transferPixDTO = new TransferPixDTO(
+                account1.getAccountNumber(),
+                account2.getAccountNumber(),
+                BigDecimal.valueOf(200)
+        );
+
+        assertThrows(AccountInactiveException.class, () -> accountPostService.transferViaPix(transferPixDTO));
+        assertThat(account1.getAccountEvents().size()).isEqualTo(0);
+        assertThat(account2.getAccountEvents().size()).isEqualTo(0);
+
+        assertThat(account1.getBalance()).isEqualByComparingTo("500.00");
+        assertThat(account2.getBalance()).isEqualByComparingTo("0.00");
+
     }
 
 }

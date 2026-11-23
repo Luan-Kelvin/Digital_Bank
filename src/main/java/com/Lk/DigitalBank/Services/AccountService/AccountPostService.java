@@ -5,15 +5,16 @@ import com.Lk.DigitalBank.Conversores.Conversor;
 import com.Lk.DigitalBank.DTOs.Account.AccountGetDTO;
 import com.Lk.DigitalBank.DTOs.Account.AccountPostDTO;
 import com.Lk.DigitalBank.DTOs.Account.TransferPixDTO;
+import com.Lk.DigitalBank.DTOs.AccountEvents.AccountEventsPostDTO;
 import com.Lk.DigitalBank.DTOs.Transaction.TransactionPixDTO;
+import com.Lk.DigitalBank.ENUM.EventType;
 import com.Lk.DigitalBank.Entity.Account;
 import com.Lk.DigitalBank.Entity.Customer;
-import com.Lk.DigitalBank.Entity.Transaction;
 import com.Lk.DigitalBank.Exception.*;
 import com.Lk.DigitalBank.Repository.AccountRepository;
 import com.Lk.DigitalBank.Repository.CustomerRepository;
-import com.Lk.DigitalBank.Repository.TransactionRepository;
-import jakarta.transaction.Transactional;
+import com.Lk.DigitalBank.Services.AccountEvents.AccountEventsService;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,11 +26,11 @@ import java.time.LocalDateTime;
 @Service
 @RequiredArgsConstructor
 public class AccountPostService {
-    private final Logger logger = LoggerFactory.getLogger(AccountGetService.class);
+    private final Logger logger = LoggerFactory.getLogger(AccountPostService.class);
     private final Conversor conversor;
     private final AccountRepository accountRepository;
     private final CustomerRepository customerRepository;
-    private final TransactionRepository transactionRepository;
+    private final AccountEventsService accountEventsService;
     private final NumberGenerator numberGenerator;
 
     // CRIAR CONTA
@@ -56,10 +57,10 @@ public class AccountPostService {
     @Transactional
     public TransactionPixDTO transferViaPix(TransferPixDTO dto) {
 
-        Account recipient = accountRepository.findByAccountNumber(dto.recipientAccount())
+        Account recipient = accountRepository.findByAccountNumberForUpdate(dto.recipientAccount())
                 .orElseThrow(() -> new AccountDoesNotExistException(String.format("ERRO! Conta com Nº %s não existe.", dto.recipientAccount())));
 
-        Account sender = accountRepository.findByAccountNumber(dto.senderAccount())
+        Account sender = accountRepository.findByAccountNumberForUpdate(dto.senderAccount())
                 .orElseThrow(() -> new AccountDoesNotExistException(String.format("ERRO! Conta com Nº %s não existe", dto.senderAccount())));
 
         if (!recipient.isActive()){
@@ -78,12 +79,21 @@ public class AccountPostService {
             throw new PixTransferFailedException("ERRO! Contas precisam ser diferentes para realizar PIX.");
         }
 
-        Transaction transactionSender = sender.makeAPixTransfer(recipient, dto.value());
-        Transaction transactionRecipient = recipient.receivePixTransfer(sender, dto.value());
-        accountRepository.save(sender);
-        accountRepository.save(recipient);
-        transactionRepository.save(transactionSender);
-        transactionRepository.save(transactionRecipient);
+        AccountEventsPostDTO senderEvent = new AccountEventsPostDTO(
+                sender.getId(),
+                EventType.PIX_SENT,
+                dto.value()
+        );
+
+        AccountEventsPostDTO recipientEvent = new AccountEventsPostDTO(
+                recipient.getId(),
+                EventType.PIX_RECEIVED,
+                dto.value()
+        );
+
+        accountEventsService.registerEvents(senderEvent);
+        accountEventsService.registerEvents(recipientEvent);
+
 
         logger.info(String.format("%s fez um pix no valor de R$%s para %s.", sender.getCustomer().getName(), dto.value(), recipient.getCustomer().getName()));
 
