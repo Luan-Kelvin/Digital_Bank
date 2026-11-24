@@ -20,4 +20,10 @@ public interface AccountEventsRepository extends JpaRepository<AccountEvents, Lo
             Long accountId
     );
 
+    List<AccountEvents>
+    findAllByAccount_IdAndSequenceNumberGreaterThanOrderBySequenceNumberAsc(
+            Long accountId,
+            Long sequenceNumber
+    );
+
 }
