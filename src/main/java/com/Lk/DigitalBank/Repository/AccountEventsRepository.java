@@ -26,4 +26,10 @@ public interface AccountEventsRepository extends JpaRepository<AccountEvents, Lo
             Long sequenceNumber
     );
 
+    // CONTAR TOTAL DE EVENTOS DE UMA CONTA
+    Long countByAccount_Id(Long accountId);
+
+    // CONTAR QUANTOS EVENTOS VIERAM APOS O NUMERO DE SEQUENCIA
+    Long countByAccount_IdAndSequenceNumberGreaterThan(Long accountId, Long sequenceNumber);
+
 }

@@ -7,8 +7,10 @@ import com.Lk.DigitalBank.DTOs.AccountEvents.AccountStatementDTO;
 import com.Lk.DigitalBank.ENUM.AccountStatus;
 import com.Lk.DigitalBank.ENUM.AccountType;
 import com.Lk.DigitalBank.Entity.Account;
+import com.Lk.DigitalBank.Entity.AccountSnapshots;
 import com.Lk.DigitalBank.Exception.*;
 import com.Lk.DigitalBank.Repository.AccountRepository;
+import com.Lk.DigitalBank.Repository.AccountSnapshotsRepository;
 import com.Lk.DigitalBank.Services.AccountEvents.AccountBalanceReconstructor;
 import com.Lk.DigitalBank.Services.AccountEvents.AccountStatementService;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +31,7 @@ public class AccountGetService {
     private final AccountRepository accountRepository;
     private final AccountBalanceReconstructor accountBalanceReconstructor;
     private final AccountStatementService accountStatementService;
+    private final AccountSnapshotsRepository accountSnapshotsRepository;
 
 
     // LISTAR CONTAS ATIVAS NO BANCO
@@ -104,7 +107,11 @@ public class AccountGetService {
             throw new AccountInactiveException(String.format("ERRO! Conta Nº %s está inativa.", accountNumber));
         }
 
-        return new AccountBalanceDTO(accountBalanceReconstructor.reconstructBalance(account.getId()));
+        if (accountSnapshotsRepository.existsByAccount_id(account.getId())){
+            return new AccountBalanceDTO(accountBalanceReconstructor.reconstructBalance(account.getId()));
+        }else {
+            return new AccountBalanceDTO(accountBalanceReconstructor.reconstructBalanceViaEvents(account.getId()));
+        }
     }
 
     // BUSCAR POR STATUS DA CONTA
