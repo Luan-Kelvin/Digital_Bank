@@ -11,11 +11,13 @@ import com.Lk.DigitalBank.ENUM.AccountType;
 import com.Lk.DigitalBank.ENUM.EventType;
 import com.Lk.DigitalBank.Entity.Account;
 import com.Lk.DigitalBank.Entity.AccountEvents;
+import com.Lk.DigitalBank.Entity.AccountSnapshots;
 import com.Lk.DigitalBank.Entity.Customer;
 import com.Lk.DigitalBank.Exception.AccountInactiveException;
 import com.Lk.DigitalBank.Exception.InsufficientBalanceWithdraw;
 import com.Lk.DigitalBank.Repository.AccountEventsRepository;
 import com.Lk.DigitalBank.Repository.AccountRepository;
+import com.Lk.DigitalBank.Repository.AccountSnapshotsRepository;
 import com.Lk.DigitalBank.Repository.CustomerRepository;
 import com.Lk.DigitalBank.Repository.TransactionRepository;
 import com.Lk.DigitalBank.Services.AccountEvents.AccountBalanceReconstructor;
@@ -23,6 +25,7 @@ import com.Lk.DigitalBank.Services.AccountEvents.AccountEventsService;
 import com.Lk.DigitalBank.Services.AccountEvents.AccountStatementService;
 import com.Lk.DigitalBank.Services.AccountService.AccountPostService;
 import com.Lk.DigitalBank.Services.AccountService.AccountServiceGeneral;
+import com.Lk.DigitalBank.Services.AccountSnapshots.AccountSnapshotsService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -60,6 +63,9 @@ public class AccountEventsIntegrationTest {
     private AccountRepository accountRepository;
 
     @Autowired
+    private AccountSnapshotsRepository accountSnapshotsRepository;
+
+    @Autowired
     private AccountBalanceReconstructor balanceReconstructor;
 
     @Autowired
@@ -71,6 +77,9 @@ public class AccountEventsIntegrationTest {
     @Autowired
     private AccountPostService accountPostService;
 
+    @Autowired
+    private AccountSnapshotsService accountSnapshotsService;
+
     Long idAccount1;
     Long idAccount2;
 
@@ -78,6 +87,7 @@ public class AccountEventsIntegrationTest {
     @Transactional
     void setup(){
         accountEventsRepository.deleteAllInBatch();
+        accountSnapshotsRepository.deleteAllInBatch();
         transactionRepository.deleteAllInBatch();
         accountRepository.deleteAllInBatch();
         customerRepository.deleteAllInBatch();
@@ -192,10 +202,8 @@ public class AccountEventsIntegrationTest {
     }
 
     @Test
-    @DisplayName("Deve reconstruir o saldo utilizando os eventos registrados")
-    void reconstructBalanceTest() {
-
-        // Registrar depósitos
+    @DisplayName("Deve reconstruir o saldo a partir do snapshot e dos eventos posteriores")
+    void reconstructBalanceUsingSnapshotTest() {
         accountEventsService.registerEvents(
                 createAccount(
                         idAccount1,
@@ -212,7 +220,14 @@ public class AccountEventsIntegrationTest {
                 )
         );
 
-        // Registrar saque
+        Account account = accountRepository.findById(idAccount1).orElseThrow();
+        AccountSnapshots snapshot = new AccountSnapshots(
+                account,
+                BigDecimal.valueOf(800),
+                1L
+        );
+        accountSnapshotsRepository.save(snapshot);
+
         accountEventsService.registerEvents(
                 createAccount(
                         idAccount1,
@@ -221,7 +236,12 @@ public class AccountEventsIntegrationTest {
                 )
         );
 
-        // Reconstruir saldo
+        accountEventsRepository.deleteAll(
+                eventsForAccount(idAccount1).stream()
+                        .filter(event -> event.getSequenceNumber() <= snapshot.getLastSequenceNumber())
+                        .toList()
+        );
+
         BigDecimal reconstructedBalance =
                 balanceReconstructor.reconstructBalance(idAccount1);
 
@@ -230,8 +250,44 @@ public class AccountEventsIntegrationTest {
     }
 
     @Test
-    @DisplayName("Deve reconstruir o saldo independentemente do saldo atual da conta")
-    void reconstructBalanceWithoutUsingCurrentBalanceTest() {
+    @DisplayName("Deve consultar apenas eventos posteriores à sequência do snapshot")
+    void reconstructBalanceQueriesOnlyEventsAfterSnapshotSequenceTest() {
+        accountEventsService.registerEvents(
+                createAccount(idAccount1, BigDecimal.valueOf(100), EventType.MONEY_DEPOSITED)
+        );
+        accountEventsService.registerEvents(
+                createAccount(idAccount1, BigDecimal.valueOf(200), EventType.MONEY_DEPOSITED)
+        );
+        accountEventsService.registerEvents(
+                createAccount(idAccount1, BigDecimal.valueOf(300), EventType.MONEY_DEPOSITED)
+        );
+
+        Account account = accountRepository.findById(idAccount1).orElseThrow();
+        accountSnapshotsRepository.save(
+                new AccountSnapshots(account, BigDecimal.valueOf(600), 2L)
+        );
+
+        accountEventsService.registerEvents(
+                createAccount(idAccount1, BigDecimal.valueOf(400), EventType.MONEY_DEPOSITED)
+        );
+
+        List<AccountEvents> eventsAfterSnapshot =
+                accountEventsRepository.findAllByAccount_IdAndSequenceNumberGreaterThanOrderBySequenceNumberAsc(
+                        idAccount1, 2L
+                );
+        assertThat(eventsAfterSnapshot)
+                .extracting(AccountEvents::getSequenceNumber)
+                .containsExactly(3L);
+
+        BigDecimal reconstructedBalance = balanceReconstructor.reconstructBalance(idAccount1);
+
+        assertThat(reconstructedBalance)
+                .isEqualByComparingTo("1000");
+    }
+
+    @Test
+    @DisplayName("Deve reconstruir o saldo utilizando todos os eventos registrados")
+    void reconstructBalanceViaEventsTest() {
 
         accountEventsService.registerEvents(
                 createAccount(
@@ -255,13 +311,61 @@ public class AccountEventsIntegrationTest {
         BigDecimal originalBalance = account.getBalance();
 
         BigDecimal reconstructedBalance =
-                balanceReconstructor.reconstructBalance(idAccount1);
+                balanceReconstructor.reconstructBalanceViaEvents(idAccount1);
 
         assertThat(reconstructedBalance)
                 .isEqualByComparingTo("300");
 
         assertThat(account.getBalance())
                 .isEqualByComparingTo(originalBalance);
+    }
+
+    @Test
+    @DisplayName("Deve criar o primeiro snapshot reconstruindo o saldo por todos os eventos")
+    void createFirstSnapshotUsingEventsTest() {
+        accountEventsService.registerEvents(
+                createAccount(idAccount1, BigDecimal.valueOf(500), EventType.MONEY_DEPOSITED)
+        );
+        accountEventsService.registerEvents(
+                createAccount(idAccount1, BigDecimal.valueOf(100), EventType.MONEY_WITHDRAWN)
+        );
+
+        accountSnapshotsService.createSnapshots(idAccount1);
+
+        AccountSnapshots snapshot = accountSnapshotsRepository.findByAccount_Id(idAccount1)
+                .orElseThrow();
+        assertThat(snapshot.getBalance()).isEqualByComparingTo("400");
+        assertThat(snapshot.getLastSequenceNumber()).isEqualTo(1L);
+        assertThat(accountSnapshotsRepository.count()).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("Deve atualizar o snapshot existente com os eventos posteriores")
+    void updateExistingSnapshotTest() {
+        accountEventsService.registerEvents(
+                createAccount(idAccount1, BigDecimal.valueOf(500), EventType.MONEY_DEPOSITED)
+        );
+
+        Account account = accountRepository.findById(idAccount1).orElseThrow();
+        AccountSnapshots existingSnapshot = accountSnapshotsRepository.save(
+                new AccountSnapshots(account, BigDecimal.valueOf(500), 0L)
+        );
+
+        accountEventsService.registerEvents(
+                createAccount(idAccount1, BigDecimal.valueOf(200), EventType.MONEY_DEPOSITED)
+        );
+        accountEventsService.registerEvents(
+                createAccount(idAccount1, BigDecimal.valueOf(100), EventType.MONEY_WITHDRAWN)
+        );
+
+        accountSnapshotsService.createSnapshots(idAccount1);
+
+        AccountSnapshots updatedSnapshot = accountSnapshotsRepository.findByAccount_Id(idAccount1)
+                .orElseThrow();
+        assertThat(updatedSnapshot.getId()).isEqualTo(existingSnapshot.getId());
+        assertThat(updatedSnapshot.getBalance()).isEqualByComparingTo("600");
+        assertThat(updatedSnapshot.getLastSequenceNumber()).isEqualTo(2L);
+        assertThat(accountSnapshotsRepository.count()).isEqualTo(1);
     }
 
     @Test
