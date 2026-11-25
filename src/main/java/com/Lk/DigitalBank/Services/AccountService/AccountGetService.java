@@ -3,15 +3,19 @@ package com.Lk.DigitalBank.Services.AccountService;
 import com.Lk.DigitalBank.Conversores.Conversor;
 import com.Lk.DigitalBank.DTOs.Account.AccountBalanceDTO;
 import com.Lk.DigitalBank.DTOs.Account.AccountGetDTO;
+import com.Lk.DigitalBank.DTOs.AccountEvents.AccountStatementDTO;
 import com.Lk.DigitalBank.ENUM.AccountStatus;
 import com.Lk.DigitalBank.ENUM.AccountType;
 import com.Lk.DigitalBank.Entity.Account;
 import com.Lk.DigitalBank.Exception.*;
 import com.Lk.DigitalBank.Repository.AccountRepository;
+import com.Lk.DigitalBank.Services.AccountEvents.AccountBalanceReconstructor;
+import com.Lk.DigitalBank.Services.AccountEvents.AccountStatementService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,9 +27,12 @@ public class AccountGetService {
     private final Logger logger = LoggerFactory.getLogger(AccountGetService.class);
     private final Conversor conversor;
     private final AccountRepository accountRepository;
+    private final AccountBalanceReconstructor accountBalanceReconstructor;
+    private final AccountStatementService accountStatementService;
 
 
     // LISTAR CONTAS ATIVAS NO BANCO
+    @Transactional(readOnly = true)
     public List<AccountGetDTO> listAccountsAcitives(){
         List<Account> accounts = accountRepository.searchActives();
 
@@ -44,6 +51,7 @@ public class AccountGetService {
     }
 
     // LISTAR CONTAS INATIVAS NO BANCO
+    @Transactional(readOnly = true)
     public List<AccountGetDTO> listAccountsInactive(){
         List<Account> accounts = accountRepository.searchInactives();
 
@@ -62,6 +70,7 @@ public class AccountGetService {
     }
 
     // BUSCAR CONTA POR ID (CONTROLLER)
+    @Transactional(readOnly = true)
     public AccountGetDTO findByIdController(Long id){
         Account account = accountRepository.findById(id)
                 .orElseThrow(() -> new AccountDoesNotExistException(String.format("ERRO! nenhuma conta com ID %s encontrada.", id)));
@@ -70,12 +79,14 @@ public class AccountGetService {
     }
 
     // BUSCAR CONTA POR ID (CLASSES)
+
     public Account findById(Long id){
         return accountRepository.findByIdForUpdate(id)
                 .orElseThrow(() -> new AccountDoesNotExistException(String.format("ERRO! nenhuma conta com ID %s encontrada.", id)));
     }
 
     // BUSCAR POR NÚMERO DA CONTA
+    @Transactional(readOnly = true)
     public AccountGetDTO findByAccountNumber(String number){
         Account account = accountRepository.findByAccountNumber(number)
                 .orElseThrow(() -> new AccountDoesNotExistException(String.format("ERRO! Account com número %s não existe.", number)));
@@ -84,6 +95,7 @@ public class AccountGetService {
     }
 
     // CONSULTAR SALDO
+    @Transactional(readOnly = true)
     public AccountBalanceDTO checkBalance(String accountNumber){
         Account account = accountRepository.findByAccountNumber(accountNumber)
                 .orElseThrow(() -> new AccountDoesNotExistException(String.format("ERRO! Conta com Nº %s não existe.", accountNumber)));
@@ -92,10 +104,11 @@ public class AccountGetService {
             throw new AccountInactiveException(String.format("ERRO! Conta Nº %s está inativa.", accountNumber));
         }
 
-        return new AccountBalanceDTO(account.getBalance());
+        return new AccountBalanceDTO(accountBalanceReconstructor.reconstructBalance(account.getId()));
     }
 
     // BUSCAR POR STATUS DA CONTA
+    @Transactional(readOnly = true)
     public List<AccountGetDTO> searchByStatus(String status){
         AccountStatus st = null;
 
@@ -120,6 +133,7 @@ public class AccountGetService {
     }
 
     // BUSCAR POR TIPO
+    @Transactional(readOnly = true)
     public List<AccountGetDTO> searchByType(String type){
         AccountType ty = null;
 
@@ -143,6 +157,7 @@ public class AccountGetService {
 
 
     // BUSCAR CONTAS DE UM CLIENTE
+    @Transactional(readOnly = true)
     public List<AccountGetDTO> searchByCustomer(String cpf){
         if (!cpf.matches("^\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}$")){
             throw new InvalidCPFException("Erro! Formato de CPF Inválido.");
@@ -156,6 +171,20 @@ public class AccountGetService {
         }
 
         return accounts.stream().map(conversor::converterAccount).toList();
+    }
+
+    // GERAR RELATÓRIO
+    @Transactional(readOnly = true)
+    public AccountStatementDTO generateStatement(String accountNumber){
+        Account account = accountRepository.findByAccountNumber(accountNumber)
+                .orElseThrow(() -> new AccountDoesNotExistException("ERRO! Conta não foi enontrada."));
+
+        if (!account.isActive()){
+            throw new AccountInactiveException(String.format("ERRO! Conta Nº %s está inativa.", accountNumber));
+        }
+
+        return accountStatementService.generateStatement(account.getId());
+
     }
 
 }

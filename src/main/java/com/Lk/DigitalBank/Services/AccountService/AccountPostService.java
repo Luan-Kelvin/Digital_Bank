@@ -48,6 +48,15 @@ public class AccountPostService {
         customer.addAccount(account);
 
         accountRepository.save(account);
+
+        AccountEventsPostDTO eventPost = new AccountEventsPostDTO(
+                account.getId(),
+                EventType.ACCOUNT_CREATED,
+                BigDecimal.ZERO
+                );
+
+        accountEventsService.registerEvents(eventPost);
+
         logger.info("Conta "+account.getAccountNumber()+" criada com sucesso!");
 
         return conversor.converterAccount(account);

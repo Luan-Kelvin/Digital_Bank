@@ -54,7 +54,7 @@ public class AccountBalanceReconstructor {
 
         for (AccountEvents event: events){
             switch (event.getEventType()){
-                case MONEY_DEPOSITED, PIX_RECEIVED -> balance = balance.add(event.getAmount());
+                case MONEY_DEPOSITED, PIX_RECEIVED, ACCOUNT_CREATED -> balance = balance.add(event.getAmount());
                 case MONEY_WITHDRAWN, PIX_SENT -> balance = balance.subtract(event.getAmount());
                 default -> throw new IllegalArgumentException(
                         "Evento ainda não implementado na reconstrução: "

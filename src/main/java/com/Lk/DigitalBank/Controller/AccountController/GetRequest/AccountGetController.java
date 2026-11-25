@@ -2,6 +2,7 @@ package com.Lk.DigitalBank.Controller.AccountController.GetRequest;
 
 import com.Lk.DigitalBank.DTOs.Account.AccountBalanceDTO;
 import com.Lk.DigitalBank.DTOs.Account.AccountGetDTO;
+import com.Lk.DigitalBank.DTOs.AccountEvents.AccountStatementDTO;
 import com.Lk.DigitalBank.Services.AccountService.AccountGetService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -69,5 +70,9 @@ public class AccountGetController {
         return ResponseEntity.ok().body(accountGetService.searchByCustomer(cpf));
     }
 
-
+    // GERAR EXTRATO DE CONTA
+    @GetMapping("/statement/{accountNumber}")
+    public ResponseEntity<AccountStatementDTO> generateStatement(@PathVariable("accountNumber") String accountNumber){
+        return ResponseEntity.ok().body(accountGetService.generateStatement(accountNumber));
+    }
 }
