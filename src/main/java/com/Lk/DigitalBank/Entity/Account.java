@@ -61,6 +61,9 @@ public class Account {
     @OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
     private List<AccountEvents> accountEvents = new ArrayList<>();
 
+    @OneToOne(mappedBy = "account")
+    private AccountSnapshots accountSnapshot;
+
     public Account(Customer customer, AccountType accountType) {
         this.customer = customer;
         this.accountType = accountType;
@@ -89,6 +92,15 @@ public class Account {
         if (transaction.getAccount() != this){
             transaction.setAccount(this);
         }
+    }
+
+    // ADICIONAR SNAPSHOTS
+    public void addSnapshots(AccountSnapshots snapshots){
+        if (snapshots == null){
+            throw new IllegalArgumentException("ERRO! Snapshots não pode ser nulo.");
+        }
+
+        this.accountSnapshot = snapshots;
     }
 
     // ADICIONAR NÚMERO DE CONTA
